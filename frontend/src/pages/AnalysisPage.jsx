@@ -40,7 +40,38 @@ const consoleLines = [
 ]
 
 // ─── Component ────────────────────────────────────────
+import React from 'react'
+
+class AnalysisErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = { hasError: false, error: null }
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error }
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="p-10 text-white bg-red-900 min-h-screen">
+          <h1 className="text-2xl font-bold">AnalysisPage Crash!</h1>
+          <pre className="mt-4 text-xs whitespace-pre-wrap">{this.state.error?.stack || this.state.error?.toString()}</pre>
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
+
 export default function AnalysisPage() {
+  return (
+    <AnalysisErrorBoundary>
+      <AnalysisPageContent />
+    </AnalysisErrorBoundary>
+  )
+}
+
+function AnalysisPageContent() {
   const navigate = useNavigate()
   const location = useLocation()
   const idea = location.state?.idea || ''
@@ -56,10 +87,11 @@ export default function AnalysisPage() {
     if (!idea) return
     if (currentStep >= analysisSteps.length) return
 
+    const stepDuration = analysisSteps[currentStep]?.duration || 1000
     const timer = setTimeout(() => {
       setCompletedSteps(prev => [...prev, currentStep])
       setCurrentStep(prev => prev + 1)
-    }, analysisSteps[currentStep].duration)
+    }, stepDuration)
 
     return () => clearTimeout(timer)
   }, [currentStep, idea])
