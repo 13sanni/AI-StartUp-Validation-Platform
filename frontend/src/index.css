@@ -1,0 +1,174 @@
+/* Tailwind base layers */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Google Fonts ─────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Syne:wght@700;800&display=swap');
+
+/* ─── Base Resets ───────────────────────────── */
+@layer base {
+  html { scroll-behavior: smooth; }
+
+  body {
+    @apply bg-dark-base text-white antialiased overflow-x-hidden;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Syne', 'Inter', sans-serif;
+    @apply tracking-tight leading-tight;
+  }
+
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { @apply bg-dark-base; }
+  ::-webkit-scrollbar-thumb { @apply bg-white/10 rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-brand-primary/60; }
+}
+
+/* ─── Custom Component Classes ──────────────── */
+@layer components {
+
+  /* Glass Card */
+  .glass-card {
+    @apply bg-white/[0.04] border border-white/[0.07] rounded-2xl backdrop-blur-xl
+           transition-all duration-300;
+  }
+  .glass-card:hover {
+    @apply bg-white/[0.07] border-white/[0.12] shadow-glow;
+  }
+
+  /* Gradient Text */
+  .text-gradient {
+    @apply bg-grad-brand bg-clip-text text-transparent;
+  }
+  .text-gradient-green {
+    @apply bg-grad-green bg-clip-text text-transparent;
+  }
+  .text-gradient-accent {
+    @apply bg-grad-accent bg-clip-text text-transparent;
+  }
+
+  /* Primary Button */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-7 py-3.5
+           bg-grad-brand text-white font-semibold rounded-full
+           shadow-[0_4px_24px_rgba(108,99,255,0.4)]
+           hover:shadow-[0_8px_32px_rgba(108,99,255,0.6)]
+           hover:-translate-y-0.5 active:translate-y-0
+           transition-all duration-200 cursor-pointer border-0
+           disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none;
+  }
+
+  /* Outline Button */
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5
+           bg-transparent text-white/80 font-medium rounded-full
+           border border-white/10 hover:border-brand-primary hover:text-brand-primary
+           transition-all duration-200 cursor-pointer text-sm;
+  }
+
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full
+           text-xs font-semibold tracking-wide uppercase;
+  }
+  .badge-purple { @apply bg-brand-primary/10 text-brand-primary border border-brand-primary/25; }
+  .badge-green  { @apply bg-brand-green/10 text-brand-green border border-brand-green/25; }
+  .badge-pink   { @apply bg-brand-secondary/10 text-brand-secondary border border-brand-secondary/25; }
+  .badge-blue   { @apply bg-brand-accent/10 text-brand-accent border border-brand-accent/25; }
+  .badge-orange { @apply bg-brand-orange/10 text-brand-orange border border-brand-orange/25; }
+
+  /* Section wrapper */
+  .section-padding { @apply py-20 md:py-28; }
+
+  /* Container */
+  .container {
+    @apply max-w-7xl mx-auto px-5 sm:px-8;
+  }
+
+  /* ─── Navbar ──────────────────────────────── */
+  .navbar {
+    @apply fixed top-0 left-0 right-0 z-50;
+    background: rgba(7, 8, 15, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .navbar-inner {
+    @apply flex items-center justify-between py-4;
+  }
+  .navbar-logo {
+    @apply flex items-center gap-2.5 no-underline;
+  }
+  .navbar-logo-icon {
+    @apply text-2xl;
+  }
+  .navbar-logo-text {
+    @apply text-lg font-bold text-white tracking-tight;
+  }
+  .navbar-logo-text span {
+    @apply text-gradient;
+  }
+
+  /* ─── Section Heading ─────────────────────── */
+  .section-heading {
+    @apply text-3xl md:text-4xl font-extrabold text-center mb-4;
+    font-family: 'Syne', 'Inter', sans-serif;
+  }
+  .section-subheading {
+    @apply text-white/50 text-center text-base md:text-lg max-w-2xl mx-auto mb-12;
+  }
+}
+
+/* ─── Custom Utilities (things Tailwind can't do) ── */
+@layer utilities {
+
+  /* Ambient orbs */
+  .orb {
+    @apply absolute rounded-full pointer-events-none;
+    filter: blur(80px);
+  }
+
+  /* Shimmer loading skeleton */
+  .shimmer-bg {
+    background: linear-gradient(90deg,
+      rgba(255,255,255,0.03) 0%,
+      rgba(255,255,255,0.08) 50%,
+      rgba(255,255,255,0.03) 100%);
+    background-size: 200% 100%;
+    @apply animate-shimmer;
+  }
+
+  /* Score ring base */
+  .score-ring-track {
+    fill: none;
+    stroke: rgba(255,255,255,0.06);
+  }
+  .score-ring-fill {
+    fill: none;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1.5s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* Noise overlay */
+  .noise-overlay {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    @apply fixed inset-0 pointer-events-none z-[999] opacity-50;
+  }
+
+  /* Gradient border trick */
+  .gradient-border {
+    position: relative;
+    border: 1px solid transparent;
+    background-clip: padding-box;
+  }
+  .gradient-border::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(108,99,255,0.5), rgba(247,37,133,0.3));
+    z-index: -1;
+  }
+}
