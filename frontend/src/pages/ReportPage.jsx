@@ -2,16 +2,11 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import {
-  Award, TrendingUp, Users, Shield, Map, DollarSign,
-  ArrowRight, ChevronRight, ExternalLink, Target,
-  Zap, AlertTriangle, Eye, Rocket, Clock, Coins,
-  BarChart3,
+  Award, TrendingUp, Users, Shield, Map, Code,
+  ArrowRight, ChevronRight, Target,
+  Zap, AlertTriangle, Eye, Rocket,
 } from 'lucide-react'
 import CountUp from 'react-countup'
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, Cell,
-} from 'recharts'
 
 // ─── Animation Variants ──────────────────────────────
 const fadeUp = {
@@ -66,34 +61,9 @@ function ScoreRing({ score, color, size = 200 }) {
   )
 }
 
-// ─── Mini Score Bar ──────────────────────────────────
-function MiniScoreBar({ label, score, color, icon: Icon }) {
-  return (
-    <div className="flex items-center gap-3">
-      <div className="w-8 h-8 rounded-lg bg-white/[0.04] flex items-center justify-center shrink-0">
-        <Icon size={14} className="text-white/40" />
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center justify-between mb-1">
-          <span className="text-xs text-white/50">{label}</span>
-          <span className="text-xs font-bold" style={{ color }}>{score}/100</span>
-        </div>
-        <div className="h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
-          <motion.div
-            className="h-full rounded-full"
-            style={{ backgroundColor: color }}
-            initial={{ width: 0 }}
-            animate={{ width: `${score}%` }}
-            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1], delay: 0.5 }}
-          />
-        </div>
-      </div>
-    </div>
-  )
-}
-
 // ─── SWOT Card ───────────────────────────────────────
 function SwotCard({ title, items, color, icon: Icon }) {
+  if (!items || items.length === 0) return null;
   return (
     <div
       className="glass-card p-6 relative overflow-hidden"
@@ -119,43 +89,43 @@ function SwotCard({ title, items, color, icon: Icon }) {
   )
 }
 
-// ─── Custom Tooltip for Chart ────────────────────────
-function CustomTooltip({ active, payload, label }) {
-  if (!active || !payload?.length) return null
-  return (
-    <div className="bg-dark-surface border border-white/10 rounded-lg px-3 py-2 text-xs">
-      <p className="text-white/50 mb-1">{label}</p>
-      <p className="text-brand-primary font-bold">${payload[0].value.toFixed(1)}B</p>
-    </div>
-  )
-}
-
 // ─── Main Component ──────────────────────────────────
 export default function ReportPage() {
   const location = useLocation()
   const navigate = useNavigate()
-  const report = location.state?.report
+  
+  // The API returns { message, analysisId, report: StartupState }
+  // or inside analysis logic we pass the report object directly
+  const data = location.state?.report || location.state;
 
   useEffect(() => {
-    if (!report) navigate('/', { replace: true })
-  }, [report, navigate])
+    if (!data || !data.idea) navigate('/', { replace: true })
+  }, [data, navigate])
 
-  if (!report) return null
+  if (!data || !data.idea) return null
 
   const {
-    startupName, tagline, viabilityScore, verdict, verdictColor,
-    executiveSummary, scores, market, competitors, swot, mvp, revenue,
-  } = report
+    idea,
+    audience,
+    marketResearch,
+    competitors,
+    swot,
+    productMVP,
+    techStack,
+    viabilityScore,
+  } = data;
 
-  const scoreBarItems = [
-    { label: 'Market Opportunity', score: scores.market, color: '#06d6a0', icon: TrendingUp },
-    { label: 'Product Viability', score: scores.product, color: '#6c63ff', icon: Zap },
-    { label: 'Financial Potential', score: scores.financial, color: '#ffbe0b', icon: DollarSign },
-    { label: 'Traction Potential', score: scores.traction, color: '#4cc9f0', icon: Target },
-    { label: 'Team Requirement', score: scores.team, color: '#f72585', icon: Users },
-  ]
-
-  const chartColors = ['#6c63ff', '#7c74ff', '#8c85ff', '#6c63ff', '#5c54e0']
+  const score = viabilityScore?.score || 50;
+  let verdict = 'Moderate';
+  let verdictColor = '#ffbe0b';
+  
+  if (score >= 80) {
+    verdict = 'Excellent';
+    verdictColor = '#06d6a0';
+  } else if (score < 50) {
+    verdict = 'Risky';
+    verdictColor = '#f72585';
+  }
 
   return (
     <motion.main
@@ -181,337 +151,215 @@ export default function ReportPage() {
               <Award size={14} />
               {verdict} Potential
             </span>
-            <h1 className="text-4xl md:text-5xl font-extrabold mb-3">
-              {startupName}
+            <h1 className="text-3xl md:text-5xl font-extrabold mb-3 leading-tight max-w-4xl mx-auto">
+              {idea}
             </h1>
-            <p className="text-white/40 text-lg capitalize">{tagline}</p>
+            <p className="text-white/40 text-lg capitalize">Target Audience: {audience || 'Global'}</p>
           </motion.div>
 
-          {/* ────── SCORE + BREAKDOWN ────── */}
+          {/* ────── SCORE + SUMMARY ────── */}
           <motion.div variants={fadeUp} className="glass-card p-8 md:p-10 mb-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-              {/* Score Ring */}
               <div className="flex flex-col items-center">
-                <ScoreRing score={viabilityScore} color={verdictColor} size={200} />
+                <ScoreRing score={score} color={verdictColor} size={200} />
                 <div className="mt-4 text-center">
                   <span className="text-sm font-bold" style={{ color: verdictColor }}>
-                    {verdict} Viability
+                    Viability Score
                   </span>
-                  <p className="text-white/25 text-xs mt-1">
-                    Composite score across 5 dimensions
-                  </p>
                 </div>
               </div>
 
-              {/* Score Bars */}
               <div className="space-y-4">
-                <h3 className="text-sm font-bold text-white/60 uppercase tracking-wider mb-5">
-                  Score Breakdown
-                </h3>
-                {scoreBarItems.map((item) => (
-                  <MiniScoreBar key={item.label} {...item} />
-                ))}
+                <div className="flex items-center gap-2 mb-2">
+                  <Eye size={18} className="text-brand-accent" />
+                  <h2 className="text-lg font-bold">VC Verdict</h2>
+                </div>
+                <p className="text-white/50 leading-relaxed text-sm">
+                  {viabilityScore?.reasoning || "Analysis complete."}
+                </p>
+                <div className="mt-4 p-4 bg-white/[0.03] rounded-xl border border-white/[0.05]">
+                  <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider mb-2">Market Gap / Opportunity</h4>
+                  <p className="text-brand-green/90 text-sm">{competitors?.opportunity}</p>
+                </div>
               </div>
             </div>
-          </motion.div>
-
-          {/* ────── EXECUTIVE SUMMARY ────── */}
-          <motion.div variants={fadeUp} className="glass-card p-8 mb-8">
-            <div className="flex items-center gap-2 mb-4">
-              <Eye size={18} className="text-brand-accent" />
-              <h2 className="text-lg font-bold">Executive Summary</h2>
-            </div>
-            <p className="text-white/50 leading-relaxed text-sm">
-              {executiveSummary}
-            </p>
           </motion.div>
 
           {/* ────── MARKET ANALYSIS ────── */}
-          <motion.div variants={fadeUp} className="glass-card p-8 mb-8">
-            <div className="flex items-center gap-2 mb-6">
-              <TrendingUp size={18} className="text-brand-green" />
-              <h2 className="text-lg font-bold">Market Analysis</h2>
-              <span className="badge badge-green ml-2" style={{ fontSize: '0.6rem', padding: '2px 8px' }}>
-                {market.growth}
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Market Sizes */}
-              <div className="space-y-4">
-                <div className="grid grid-cols-3 gap-3">
-                  {[
-                    { label: 'TAM', value: market.tam, desc: 'Total Addressable' },
-                    { label: 'SAM', value: market.sam, desc: 'Serviceable' },
-                    { label: 'SOM', value: market.som, desc: 'Obtainable' },
-                  ].map((m) => (
-                    <div key={m.label} className="bg-white/[0.03] rounded-xl p-4 text-center">
-                      <div className="text-xs text-white/30 mb-1">{m.label}</div>
-                      <div className="text-xl font-bold text-gradient-green">{m.value}</div>
-                      <div className="text-[10px] text-white/20 mt-1">{m.desc}</div>
-                    </div>
-                  ))}
+          {marketResearch && (
+            <motion.div variants={fadeUp} className="glass-card p-8 mb-8">
+              <div className="flex items-center gap-2 mb-6">
+                <TrendingUp size={18} className="text-brand-green" />
+                <h2 className="text-lg font-bold">Market Dynamics</h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-white/[0.03] rounded-xl p-5">
+                  <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider mb-3">Market Trend</h4>
+                  <p className="text-sm text-white/70">{marketResearch.marketTrend}</p>
                 </div>
-
-                <div>
-                  <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider mb-3">Key Trends</h4>
+                <div className="bg-white/[0.03] rounded-xl p-5">
+                  <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider mb-3">Target Personas</h4>
                   <ul className="space-y-2">
-                    {market.trends.map((trend, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm text-white/45">
-                        <TrendingUp size={13} className="text-brand-green/50 shrink-0 mt-0.5" />
-                        {trend}
+                    {marketResearch.targetUsers?.map((u, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-white/50">
+                        <Users size={14} className="text-brand-accent mt-0.5 shrink-0" /> {u}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="bg-white/[0.03] rounded-xl p-5">
+                  <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider mb-3">Pain Points Solved</h4>
+                  <ul className="space-y-2">
+                    {marketResearch.painPoints?.map((p, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-white/50">
+                        <Target size={14} className="text-brand-green mt-0.5 shrink-0" /> {p}
                       </li>
                     ))}
                   </ul>
                 </div>
               </div>
-
-              {/* Market Chart */}
-              <div>
-                <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider mb-3">
-                  Market Size Projection
-                </h4>
-                <div className="h-[220px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={market.chartData} barSize={32}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-                      <XAxis
-                        dataKey="name"
-                        tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 11 }}
-                        axisLine={{ stroke: 'rgba(255,255,255,0.06)' }}
-                        tickLine={false}
-                      />
-                      <YAxis
-                        tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 11 }}
-                        axisLine={{ stroke: 'rgba(255,255,255,0.06)' }}
-                        tickLine={false}
-                        tickFormatter={(v) => `$${v}B`}
-                      />
-                      <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
-                      <Bar dataKey="value" radius={[6, 6, 0, 0]}>
-                        {market.chartData.map((_, i) => (
-                          <Cell key={i} fill={chartColors[i % chartColors.length]} />
-                        ))}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          )}
 
           {/* ────── COMPETITOR LANDSCAPE ────── */}
-          <motion.div variants={fadeUp} className="glass-card p-8 mb-8">
-            <div className="flex items-center gap-2 mb-6">
-              <Users size={18} className="text-brand-accent" />
-              <h2 className="text-lg font-bold">Competitor Landscape</h2>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-white/[0.06]">
-                    <th className="text-left text-white/30 font-medium py-3 pr-4 text-xs uppercase tracking-wider">Company</th>
-                    <th className="text-left text-white/30 font-medium py-3 pr-4 text-xs uppercase tracking-wider">Type</th>
-                    <th className="text-left text-white/30 font-medium py-3 pr-4 text-xs uppercase tracking-wider">Funding</th>
-                    <th className="text-left text-white/30 font-medium py-3 text-xs uppercase tracking-wider">Threat Level</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {competitors.map((comp) => (
-                    <tr key={comp.id} className="border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors">
-                      <td className="py-3 pr-4">
-                        <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 rounded-lg bg-brand-primary/10 flex items-center justify-center text-xs font-bold text-brand-primary">
-                            {comp.name.charAt(0)}
-                          </div>
-                          <span className="font-medium text-white/80">{comp.name}</span>
-                        </div>
-                      </td>
-                      <td className="py-3 pr-4">
-                        <span className={`badge text-[10px] px-2 py-0.5 ${comp.type === 'Direct' ? 'badge-pink' : 'badge-blue'}`}>
-                          {comp.type}
-                        </span>
-                      </td>
-                      <td className="py-3 pr-4 text-white/50">{comp.funding}</td>
-                      <td className="py-3">
-                        <div className="flex items-center gap-2">
-                          <div className="w-16 h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
-                            <motion.div
-                              className="h-full rounded-full"
-                              style={{
-                                backgroundColor: comp.strength >= 75 ? '#f72585' :
-                                  comp.strength >= 50 ? '#ffbe0b' : '#06d6a0'
-                              }}
-                              initial={{ width: 0 }}
-                              animate={{ width: `${comp.strength}%` }}
-                              transition={{ duration: 1, delay: 0.5 }}
-                            />
-                          </div>
-                          <span className="text-xs text-white/40">{comp.strength}%</span>
-                        </div>
-                      </td>
+          {competitors?.competitors && (
+            <motion.div variants={fadeUp} className="glass-card p-8 mb-8">
+              <div className="flex items-center gap-2 mb-6">
+                <Users size={18} className="text-brand-accent" />
+                <h2 className="text-lg font-bold">Competitor Landscape</h2>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-white/[0.06]">
+                      <th className="text-left text-white/30 font-medium py-3 pr-4 text-xs uppercase tracking-wider">Competitor</th>
+                      <th className="text-left text-white/30 font-medium py-3 pr-4 text-xs uppercase tracking-wider">Key Strength</th>
+                      <th className="text-left text-white/30 font-medium py-3 text-xs uppercase tracking-wider">Key Weakness</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </motion.div>
+                  </thead>
+                  <tbody>
+                    {competitors.competitors.map((comp, idx) => (
+                      <tr key={idx} className="border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors">
+                        <td className="py-4 pr-4">
+                          <span className="font-bold text-white/80">{comp.name}</span>
+                        </td>
+                        <td className="py-4 pr-4 text-brand-green/70">{comp.strength}</td>
+                        <td className="py-4 text-brand-orange/70">{comp.weakness}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </motion.div>
+          )}
 
           {/* ────── SWOT ANALYSIS ────── */}
-          <motion.div variants={fadeUp} className="mb-8">
-            <div className="flex items-center gap-2 mb-6">
-              <Shield size={18} className="text-brand-primary" />
-              <h2 className="text-lg font-bold">SWOT Analysis</h2>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <SwotCard title="Strengths" items={swot.strengths} color="#06d6a0" icon={Zap} />
-              <SwotCard title="Weaknesses" items={swot.weaknesses} color="#f72585" icon={AlertTriangle} />
-              <SwotCard title="Opportunities" items={swot.opportunities} color="#4cc9f0" icon={Eye} />
-              <SwotCard title="Threats" items={swot.threats} color="#ffbe0b" icon={Shield} />
-            </div>
-          </motion.div>
+          {swot && (
+            <motion.div variants={fadeUp} className="mb-8">
+              <div className="flex items-center gap-2 mb-6">
+                <Shield size={18} className="text-brand-primary" />
+                <h2 className="text-lg font-bold">SWOT Analysis</h2>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <SwotCard title="Strengths" items={swot.strengths} color="#06d6a0" icon={Zap} />
+                <SwotCard title="Weaknesses" items={swot.weaknesses} color="#f72585" icon={AlertTriangle} />
+                <SwotCard title="Opportunities" items={swot.opportunities} color="#4cc9f0" icon={Eye} />
+                <SwotCard title="Threats" items={swot.threats} color="#ffbe0b" icon={Shield} />
+              </div>
+            </motion.div>
+          )}
 
           {/* ────── MVP ROADMAP ────── */}
-          <motion.div variants={fadeUp} className="glass-card p-8 mb-8">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-2">
+          {productMVP && (
+            <motion.div variants={fadeUp} className="glass-card p-8 mb-8">
+              <div className="flex items-center gap-2 mb-6">
                 <Map size={18} className="text-brand-orange" />
-                <h2 className="text-lg font-bold">MVP Roadmap</h2>
+                <h2 className="text-lg font-bold">Product Roadmap</h2>
               </div>
-              <div className="flex gap-3 text-xs text-white/30">
-                <span className="flex items-center gap-1"><Clock size={12} /> {mvp.timeline}</span>
-                <span className="flex items-center gap-1"><Coins size={12} /> {mvp.budget}</span>
-              </div>
-            </div>
-
-            <div className="space-y-6">
-              {mvp.phases.map((phase, pi) => (
-                <div key={pi} className="relative">
-                  {/* Phase connector */}
-                  {pi < mvp.phases.length - 1 && (
-                    <div className="absolute left-[15px] top-10 bottom-0 w-px bg-white/[0.06]" />
-                  )}
-
-                  <div className="flex items-start gap-4">
-                    {/* Phase dot */}
-                    <div className={`
-                      w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-xs font-bold
-                      ${pi === 0 ? 'bg-brand-primary/20 text-brand-primary' :
-                        pi === 1 ? 'bg-brand-accent/20 text-brand-accent' :
-                        'bg-brand-green/20 text-brand-green'}
-                    `}>
-                      {pi + 1}
-                    </div>
-
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-3">
-                        <h3 className="font-bold text-white text-sm">{phase.name}</h3>
-                        <span className="text-xs text-white/25 flex items-center gap-1">
-                          <Clock size={10} /> {phase.duration}
-                        </span>
-                      </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                        {phase.features.map((feat, fi) => (
-                          <div key={fi} className="bg-white/[0.03] rounded-lg px-3 py-2.5 text-xs">
-                            <div className="text-white/70 font-medium mb-1">{feat.name}</div>
-                            <div className="flex items-center gap-2">
-                              <span className={`badge text-[9px] px-1.5 py-0 ${
-                                feat.priority === 'Critical' ? 'badge-pink' :
-                                feat.priority === 'High' ? 'badge-purple' :
-                                'badge-blue'
-                              }`}>
-                                {feat.priority}
-                              </span>
-                              <span className="text-white/20">{feat.effort} effort</span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
+              <div className="space-y-6">
+                <div className="border-l-2 border-white/10 pl-6 pb-2">
+                  <h3 className="font-bold text-white text-sm mb-3 flex items-center gap-2">
+                    <span className="w-6 h-6 rounded bg-brand-primary/20 text-brand-primary flex items-center justify-center text-xs -ml-9">1</span>
+                    MVP (v1) Features
+                  </h3>
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {productMVP.mvpFeatures?.map((f, i) => (
+                      <li key={i} className="bg-white/[0.03] p-2.5 rounded text-xs text-white/60">{f}</li>
+                    ))}
+                  </ul>
                 </div>
-              ))}
-            </div>
-          </motion.div>
+                <div className="border-l-2 border-white/10 pl-6 pb-2">
+                  <h3 className="font-bold text-white text-sm mb-3 flex items-center gap-2">
+                    <span className="w-6 h-6 rounded bg-brand-accent/20 text-brand-accent flex items-center justify-center text-xs -ml-9">2</span>
+                    Version 2
+                  </h3>
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {productMVP.v2Features?.map((f, i) => (
+                      <li key={i} className="bg-white/[0.03] p-2.5 rounded text-xs text-white/60">{f}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="border-l-2 border-transparent pl-6">
+                  <h3 className="font-bold text-white text-sm mb-3 flex items-center gap-2">
+                    <span className="w-6 h-6 rounded bg-brand-green/20 text-brand-green flex items-center justify-center text-xs -ml-9">3</span>
+                    Version 3 (Scale)
+                  </h3>
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {productMVP.v3Features?.map((f, i) => (
+                      <li key={i} className="bg-white/[0.03] p-2.5 rounded text-xs text-white/60">{f}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </motion.div>
+          )}
 
-          {/* ────── REVENUE MODELS ────── */}
-          <motion.div variants={fadeUp} className="glass-card p-8 mb-8">
-            <div className="flex items-center gap-2 mb-6">
-              <DollarSign size={18} className="text-brand-green" />
-              <h2 className="text-lg font-bold">Revenue Models</h2>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {revenue.map((rev, i) => (
-                <div key={i} className="bg-white/[0.03] rounded-xl p-5 hover:bg-white/[0.05] transition-colors">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-bold text-sm text-white/80">{rev.model}</h3>
-                    <span className={`badge text-[10px] px-2 py-0.5 ${
-                      rev.potential === 'High' ? 'badge-green' :
-                      rev.potential === 'Medium' ? 'badge-orange' : 'badge-blue'
-                    }`}>
-                      {rev.potential} Potential
+          {/* ────── TECH STACK ────── */}
+          {techStack && (
+            <motion.div variants={fadeUp} className="glass-card p-8 mb-8">
+              <div className="flex items-center gap-2 mb-6">
+                <Code size={18} className="text-brand-purple" />
+                <h2 className="text-lg font-bold">Recommended Tech Stack</h2>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+                <div className="bg-white/[0.02] border border-white/5 p-4 rounded-xl text-center">
+                  <div className="text-[10px] text-white/30 uppercase tracking-widest mb-1">Frontend</div>
+                  <div className="font-bold text-brand-accent text-sm">{techStack.frontend}</div>
+                </div>
+                <div className="bg-white/[0.02] border border-white/5 p-4 rounded-xl text-center">
+                  <div className="text-[10px] text-white/30 uppercase tracking-widest mb-1">Backend</div>
+                  <div className="font-bold text-brand-green text-sm">{techStack.backend}</div>
+                </div>
+                <div className="bg-white/[0.02] border border-white/5 p-4 rounded-xl text-center">
+                  <div className="text-[10px] text-white/30 uppercase tracking-widest mb-1">Database</div>
+                  <div className="font-bold text-brand-orange text-sm">{techStack.database}</div>
+                </div>
+                <div className="bg-white/[0.02] border border-white/5 p-4 rounded-xl text-center">
+                  <div className="text-[10px] text-white/30 uppercase tracking-widest mb-1">Cloud/Infra</div>
+                  <div className="font-bold text-brand-primary text-sm">{techStack.cloud}</div>
+                </div>
+              </div>
+              <div>
+                <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider mb-3">Key Modules Needed</h4>
+                <div className="flex flex-wrap gap-2">
+                  {techStack.modules?.map((m, i) => (
+                    <span key={i} className="px-3 py-1 bg-brand-purple/10 text-brand-purple text-xs rounded-full border border-brand-purple/20">
+                      {m}
                     </span>
-                  </div>
-                  <p className="text-white/40 text-xs leading-relaxed">{rev.description}</p>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* ────── FINAL VERDICT ────── */}
-          <motion.div variants={fadeUp}
-            className="glass-card p-8 md:p-10 text-center relative overflow-hidden"
-          >
-            <div
-              className="absolute inset-0 opacity-[0.03]"
-              style={{
-                background: `radial-gradient(circle at 50% 50%, ${verdictColor}, transparent 70%)`,
-              }}
-            />
-            <div className="relative z-10">
-              <Award size={40} className="mx-auto mb-4" style={{ color: verdictColor }} />
-              <h2 className="text-2xl font-extrabold mb-2">Final Verdict</h2>
-              <p className="text-4xl font-extrabold mb-3" style={{ color: verdictColor }}>
-                {viabilityScore}/100 — {verdict}
-              </p>
-              <p className="text-white/40 text-sm max-w-xl mx-auto mb-8 leading-relaxed">
-                {viabilityScore >= 75
-                  ? 'This startup concept shows excellent potential. With strong execution and strategic market positioning, this idea has a high probability of achieving meaningful traction.'
-                  : viabilityScore >= 55
-                  ? 'This idea has moderate potential but faces notable challenges. Consider refining your value proposition and addressing the key weaknesses identified above.'
-                  : 'This concept faces significant headwinds. We recommend substantial pivoting or exploring adjacent market opportunities before investing significant resources.'
-                }
-              </p>
-
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-                <button
-                  id="new-analysis-button"
-                  className="btn-primary"
-                  onClick={() => navigate('/')}
-                >
-                  <Rocket size={16} />
-                  Validate Another Idea
-                  <ArrowRight size={16} />
-                </button>
               </div>
-            </div>
+            </motion.div>
+          )}
+
+          <motion.div variants={fadeUp} className="flex justify-center mt-12">
+            <button className="btn-primary px-8 py-3" onClick={() => navigate('/')}>
+              <Rocket size={18} /> Validate Another Idea
+            </button>
           </motion.div>
 
         </motion.div>
       </div>
-
-      {/* Footer */}
-      <footer className="border-t border-white/[0.06] mt-16 py-8">
-        <div className="container text-center text-xs text-white/20">
-          Generated by LaunchLens AI · {new Date().toLocaleDateString('en-US', {
-            year: 'numeric', month: 'long', day: 'numeric'
-          })}
-        </div>
-      </footer>
     </motion.main>
   )
 }

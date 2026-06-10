@@ -33,10 +33,31 @@ Country: {country}
   return { marketResearch: result };
 };
 
+
 export const competitorAgent = async (state: StartupState) => {
   console.log("--- Competitor Agent ---");
-  // For Phase 3, we will integrate real web search here.
-  // For now, we use Gemini's internal knowledge.
+  
+  let searchResults = "No live search results available. Rely on internal knowledge.";
+  if (process.env.TAVILY_API_KEY) {
+    try {
+      const response = await fetch('https://api.tavily.com/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          api_key: process.env.TAVILY_API_KEY,
+          query: `Top startup competitors for: ${state.idea}`,
+          search_depth: "basic",
+          max_results: 3
+        })
+      });
+      const data = await response.json();
+      searchResults = JSON.stringify(data.results || "No results found");
+      console.log("Tavily search successful");
+    } catch (e) {
+      console.log("Tavily search failed, falling back to internal knowledge");
+    }
+  }
+
   const parser = StructuredOutputParser.fromZodSchema(
     z.object({
       competitors: z.array(
@@ -53,6 +74,7 @@ export const competitorAgent = async (state: StartupState) => {
   const prompt = PromptTemplate.fromTemplate(
     `You are a Competitive Intelligence Agent. Identify competitors for this startup idea and find a market gap.
 Idea: {idea}
+Live Search Results: {searchResults}
 
 {format_instructions}`
   );
@@ -60,6 +82,7 @@ Idea: {idea}
   const chain = prompt.pipe(llm).pipe(parser);
   const result = await chain.invoke({
     idea: state.idea,
+    searchResults: searchResults,
     format_instructions: parser.getFormatInstructions(),
   });
 
@@ -149,4 +172,35 @@ MVP Features: {mvp}
   });
 
   return { techStack: result };
+};
+
+export const scoringAgent = async (state: StartupState) => {
+  console.log("--- Scoring Agent ---");
+  const parser = StructuredOutputParser.fromZodSchema(
+    z.object({
+      score: z.number().min(1).max(100).describe("Overall viability score from 1 to 100"),
+      reasoning: z.string().describe("Short explanation of the score"),
+    })
+  );
+
+  const prompt = PromptTemplate.fromTemplate(
+    `You are a seasoned Venture Capitalist. Based on the following analysis, score this startup idea's viability from 1 to 100.
+Idea: {idea}
+Market: {market}
+SWOT: {swot}
+Competitors: {competitors}
+
+{format_instructions}`
+  );
+
+  const chain = prompt.pipe(llm).pipe(parser);
+  const result = await chain.invoke({
+    idea: state.idea,
+    market: JSON.stringify(state.marketResearch),
+    swot: JSON.stringify(state.swot),
+    competitors: JSON.stringify(state.competitors),
+    format_instructions: parser.getFormatInstructions(),
+  });
+
+  return { viabilityScore: result };
 };

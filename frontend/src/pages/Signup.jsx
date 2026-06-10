@@ -15,16 +15,24 @@ export default function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simulate API call
     try {
-      const mockUser = { id: '1', email, name };
-      const mockToken = 'mock_jwt_token_123';
+      const res = await fetch('http://localhost:5000/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password })
+      });
       
-      dispatch(setCredentials({ user: mockUser, token: mockToken }));
+      const data = await res.json();
+      
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to register');
+      }
+
+      dispatch(setCredentials({ user: data.user, token: data.token }));
       toast.success('Account created successfully!');
       navigate('/dashboard');
     } catch (error) {
-      toast.error('Failed to sign up.');
+      toast.error(error.message || 'Failed to sign up.');
     }
   };
 

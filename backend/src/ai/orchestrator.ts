@@ -53,7 +53,7 @@ export const GraphState = Annotation.Root({
 
 export type StartupState = typeof GraphState.State;
 
-import { marketResearchAgent, competitorAgent, swotAgent, productManagerAgent, techArchitectAgent } from "./agents";
+import { marketResearchAgent, competitorAgent, swotAgent, productManagerAgent, techArchitectAgent, scoringAgent } from "./agents";
 
 export const createWorkflow = () => {
   const workflow = new StateGraph(GraphState)
@@ -62,13 +62,15 @@ export const createWorkflow = () => {
     .addNode("swotAnalysis", swotAgent)
     .addNode("productManager", productManagerAgent)
     .addNode("techArchitect", techArchitectAgent)
+    .addNode("scoring", scoringAgent)
 
     .addEdge("__start__", "marketResearch")
     .addEdge("marketResearch", "competitorAnalysis")
     .addEdge("competitorAnalysis", "swotAnalysis")
     .addEdge("swotAnalysis", "productManager")
     .addEdge("productManager", "techArchitect")
-    .addEdge("techArchitect", "__end__");
+    .addEdge("techArchitect", "scoring")
+    .addEdge("scoring", "__end__");
 
   return workflow.compile();
 };

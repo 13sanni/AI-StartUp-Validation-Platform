@@ -14,16 +14,24 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simulate API call for now since backend is not fully connected
     try {
-      const mockUser = { id: '1', email, name: 'Founder' };
-      const mockToken = 'mock_jwt_token_123';
+      const res = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
       
-      dispatch(setCredentials({ user: mockUser, token: mockToken }));
+      const data = await res.json();
+      
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to login');
+      }
+
+      dispatch(setCredentials({ user: data.user, token: data.token }));
       toast.success('Logged in successfully!');
       navigate('/dashboard');
     } catch (error) {
-      toast.error('Failed to log in.');
+      toast.error(error.message || 'Failed to log in.');
     }
   };
 

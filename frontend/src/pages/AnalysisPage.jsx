@@ -5,7 +5,6 @@ import {
   Search, Users, DollarSign, Shield, Map, BarChart3,
   CheckCircle2, Loader2,
 } from 'lucide-react'
-import { generateAnalysis } from '../utils/mockAnalysis'
 
 // ─── Analysis Steps ───────────────────────────────────
 const analysisSteps = [
@@ -131,17 +130,39 @@ function AnalysisPageContent() {
     }
   }, [visibleLogs])
 
-  // Navigate to report when done
+  const [backendResult, setBackendResult] = useState(null)
+
+  // Trigger backend analysis
+  useEffect(() => {
+    if (!idea) return;
+    const runAnalysis = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ idea, audience: 'Global', country: 'Worldwide' })
+        });
+        const data = await res.json();
+        if (data.report) {
+          setBackendResult(data.report);
+        }
+      } catch (err) {
+        console.error("Backend analysis failed:", err);
+      }
+    };
+    runAnalysis();
+  }, [idea]);
+
+  // Navigate to report when both visual steps and backend are done
   useEffect(() => {
     if (!idea) return
-    if (completedSteps.length === analysisSteps.length) {
+    if (completedSteps.length === analysisSteps.length && backendResult) {
       const timer = setTimeout(() => {
-        const report = generateAnalysis(idea)
-        navigate('/report', { state: { report }, replace: true })
+        navigate('/report', { state: { report: backendResult }, replace: true })
       }, 1200)
       return () => clearTimeout(timer)
     }
-  }, [completedSteps, idea, navigate])
+  }, [completedSteps, backendResult, idea, navigate])
 
   // Redirect if no idea (must be after all hooks to satisfy rules of hooks)
   useEffect(() => {
