@@ -5,6 +5,9 @@ import Navbar from './components/Navbar'
 import Home from './pages/Home'
 import AnalysisPage from './pages/AnalysisPage'
 import ReportPage from './pages/ReportPage'
+import Login from './pages/Login'
+import Signup from './pages/Signup'
+import Dashboard from './pages/Dashboard'
 
 export default function App() {
   const location = useLocation()
@@ -31,6 +34,9 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/analyzing" element={<AnalysisPage />} />
           <Route path="/report" element={<ReportPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       </AnimatePresence>
     </>
