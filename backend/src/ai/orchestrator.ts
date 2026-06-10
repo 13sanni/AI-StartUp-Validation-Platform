@@ -1,6 +1,5 @@
-import { z } from "zod";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
-import { StateGraph, END, Annotation } from "@langchain/langgraph";
+import { StateGraph, Annotation } from "@langchain/langgraph";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -9,7 +8,7 @@ dotenv.config();
 export const llm = new ChatGoogleGenerativeAI({
   model: "gemini-1.5-flash",
   maxOutputTokens: 2048,
-  apiKey: process.env.GEMINI_API_KEY,
+  apiKey: process.env.GOOGLE_API_KEY,
 });
 
 export const GraphState = Annotation.Root({

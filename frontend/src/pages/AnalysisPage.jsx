@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Search, Users, DollarSign, Shield, Map, BarChart3,
@@ -74,6 +75,7 @@ function AnalysisPageContent() {
   const navigate = useNavigate()
   const location = useLocation()
   const idea = location.state?.idea || ''
+  const { user } = useSelector((state) => state.auth)
 
   const [currentStep, setCurrentStep] = useState(0)
   const [completedSteps, setCompletedSteps] = useState([])
@@ -140,7 +142,7 @@ function AnalysisPageContent() {
         const res = await fetch('http://localhost:5000/api/analyze', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ idea, audience: 'Global', country: 'Worldwide' })
+          body: JSON.stringify({ idea, audience: 'Global', country: 'Worldwide', userId: user?.id || null })
         });
         const data = await res.json();
         if (data.report) {

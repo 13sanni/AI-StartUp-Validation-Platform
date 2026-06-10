@@ -1,10 +1,10 @@
 import { useLocation, useNavigate } from 'react-router-dom'
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import {
   Award, TrendingUp, Users, Shield, Map, Code,
   ArrowRight, ChevronRight, Target,
-  Zap, AlertTriangle, Eye, Rocket,
+  Zap, AlertTriangle, Eye, Rocket, Download,
 } from 'lucide-react'
 import CountUp from 'react-countup'
 
@@ -93,6 +93,8 @@ function SwotCard({ title, items, color, icon: Icon }) {
 export default function ReportPage() {
   const location = useLocation()
   const navigate = useNavigate()
+  const reportRef = useRef(null)
+  const [exporting, setExporting] = useState(false)
   
   // The API returns { message, analysisId, report: StartupState }
   // or inside analysis logic we pass the report object directly
@@ -135,7 +137,7 @@ export default function ReportPage() {
       transition={{ duration: 0.4 }}
       className="min-h-screen pt-24 pb-16"
     >
-      <div className="container max-w-5xl">
+      <div className="container max-w-5xl" ref={reportRef}>
         <motion.div variants={stagger} initial="hidden" animate="visible">
 
           {/* ────── HEADER ────── */}
@@ -352,7 +354,33 @@ export default function ReportPage() {
             </motion.div>
           )}
 
-          <motion.div variants={fadeUp} className="flex justify-center mt-12">
+          <motion.div variants={fadeUp} className="flex justify-center gap-4 mt-12">
+            <button
+              className="btn-outline px-8 py-3"
+              disabled={exporting}
+              onClick={async () => {
+                setExporting(true)
+                try {
+                  const html2pdf = (await import('html2pdf.js')).default
+                  const element = reportRef.current
+                  const opt = {
+                    margin: [10, 10, 10, 10],
+                    filename: `LaunchLens-Report-${idea.slice(0, 30).replace(/\s+/g, '-')}.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2, useCORS: true, backgroundColor: '#0d0f1c' },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                  }
+                  await html2pdf().set(opt).from(element).save()
+                } catch (err) {
+                  console.error('PDF export failed:', err)
+                } finally {
+                  setExporting(false)
+                }
+              }}
+            >
+              <Download size={18} />
+              {exporting ? 'Generating PDF...' : 'Download PDF'}
+            </button>
             <button className="btn-primary px-8 py-3" onClick={() => navigate('/')}>
               <Rocket size={18} /> Validate Another Idea
             </button>
