@@ -1,73 +1,62 @@
 import { z } from "zod";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
-import { StateGraph, END } from "@langchain/langgraph";
+import { StateGraph, END, Annotation } from "@langchain/langgraph";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 // Initialize the Gemini Model
 export const llm = new ChatGoogleGenerativeAI({
-  modelName: "gemini-1.5-flash",
+  model: "gemini-1.5-flash",
   maxOutputTokens: 2048,
   apiKey: process.env.GEMINI_API_KEY,
 });
 
-// Define the state structure that will be passed between agents
-export interface StartupState {
-  idea: string;
-  audience?: string;
-  country?: string;
-  marketResearch?: any;
-  competitors?: any;
-  swot?: any;
-  productMVP?: any;
-  techStack?: any;
-  viabilityScore?: any;
-}
+export const GraphState = Annotation.Root({
+  idea: Annotation<string>({
+    reducer: (x, y) => y ?? x,
+    default: () => "",
+  }),
+  audience: Annotation<string>({
+    reducer: (x, y) => y ?? x,
+    default: () => "",
+  }),
+  country: Annotation<string>({
+    reducer: (x, y) => y ?? x,
+    default: () => "",
+  }),
+  marketResearch: Annotation<any>({
+    reducer: (x, y) => y ?? x,
+    default: () => null,
+  }),
+  competitors: Annotation<any>({
+    reducer: (x, y) => y ?? x,
+    default: () => null,
+  }),
+  swot: Annotation<any>({
+    reducer: (x, y) => y ?? x,
+    default: () => null,
+  }),
+  productMVP: Annotation<any>({
+    reducer: (x, y) => y ?? x,
+    default: () => null,
+  }),
+  techStack: Annotation<any>({
+    reducer: (x, y) => y ?? x,
+    default: () => null,
+  }),
+  viabilityScore: Annotation<any>({
+    reducer: (x, y) => y ?? x,
+    default: () => null,
+  }),
+});
 
-const graphState = {
-  idea: {
-    value: (x: string, y: string) => y ?? x,
-    default: () => "",
-  },
-  audience: {
-    value: (x: string, y: string) => y ?? x,
-    default: () => "",
-  },
-  country: {
-    value: (x: string, y: string) => y ?? x,
-    default: () => "",
-  },
-  marketResearch: {
-    value: (x: any, y: any) => y ?? x,
-    default: () => null,
-  },
-  competitors: {
-    value: (x: any, y: any) => y ?? x,
-    default: () => null,
-  },
-  swot: {
-    value: (x: any, y: any) => y ?? x,
-    default: () => null,
-  },
-  productMVP: {
-    value: (x: any, y: any) => y ?? x,
-    default: () => null,
-  },
-  techStack: {
-    value: (x: any, y: any) => y ?? x,
-    default: () => null,
-  },
-  viabilityScore: {
-    value: (x: any, y: any) => y ?? x,
-    default: () => null,
-  },
-};
+export type StartupState = typeof GraphState.State;
 
 import { marketResearchAgent, competitorAgent, swotAgent, productManagerAgent, techArchitectAgent } from "./agents";
 
 export const createWorkflow = () => {
-  const workflow = new StateGraph({ channels: graphState })
+  const workflow = new StateGraph(GraphState)
     .addNode("marketResearch", marketResearchAgent)
     .addNode("competitorAnalysis", competitorAgent)
     .addNode("swotAnalysis", swotAgent)
