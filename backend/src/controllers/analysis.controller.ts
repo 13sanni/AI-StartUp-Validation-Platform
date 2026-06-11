@@ -1,12 +1,10 @@
 import { Request, Response } from 'express';
 import { createWorkflow } from '../ai/orchestrator';
 import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { getCachedAnalysis, setCachedAnalysis } from '../cache';
 
-const prisma = new PrismaClient({
-  datasourceUrl: process.env.DATABASE_URL
-});
+const prisma = new PrismaClient();
 
 // Helper to log each agent step
 async function logAgent(analysisId: string, agentName: string, input: any, runner: () => Promise<any>) {
@@ -44,14 +42,23 @@ export const analyzeIdea = async (req: Request, res: Response): Promise<void> =>
     if (!actualUserId) {
       let guestUser = await prisma.user.findUnique({ where: { email: 'guest@launchlens.ai' } });
       if (!guestUser) {
-        const hashedPassword = await bcrypt.hash('guest_not_accessible', 10);
-        guestUser = await prisma.user.create({
-          data: {
-            email: 'guest@launchlens.ai',
-            password: hashedPassword,
-            name: 'Guest User'
+        try {
+          const hashedPassword = await bcrypt.hash('guest_not_accessible', 10);
+          guestUser = await prisma.user.create({
+            data: {
+              email: 'guest@launchlens.ai',
+              password: hashedPassword,
+              name: 'Guest User'
+            }
+          });
+        } catch (err: any) {
+          // If another concurrent request just created the user, fetch it instead
+          if (err.code === 'P2002') {
+            guestUser = await prisma.user.findUnique({ where: { email: 'guest@launchlens.ai' } });
+          } else {
+            throw err;
           }
-        });
+        }
       }
       actualUserId = guestUser.id;
     }
@@ -89,6 +96,7 @@ export const analyzeIdea = async (req: Request, res: Response): Promise<void> =>
         return await workflow.invoke({ idea, audience, country });
       });
       totalMs = Date.now() - startTime;
+      console.log(`✅ AI Pipeline completed in ${(totalMs / 1000).toFixed(1)}s`);
 
       // Cache the result for future identical queries
       await setCachedAnalysis(idea, finalState);

@@ -6,9 +6,10 @@ dotenv.config();
 
 // Initialize the Gemini Model
 export const llm = new ChatGoogleGenerativeAI({
-  model: "gemini-1.5-flash",
+  model: "gemini-2.5-flash",
   maxOutputTokens: 2048,
   apiKey: process.env.GOOGLE_API_KEY,
+  maxRetries: 2
 });
 
 export const GraphState = Annotation.Root({
@@ -56,20 +57,20 @@ import { marketResearchAgent, competitorAgent, swotAgent, productManagerAgent, t
 
 export const createWorkflow = () => {
   const workflow = new StateGraph(GraphState)
-    .addNode("marketResearch", marketResearchAgent)
-    .addNode("competitorAnalysis", competitorAgent)
-    .addNode("swotAnalysis", swotAgent)
-    .addNode("productManager", productManagerAgent)
-    .addNode("techArchitect", techArchitectAgent)
-    .addNode("scoring", scoringAgent)
+    .addNode("marketResearchNode", marketResearchAgent)
+    .addNode("competitorAnalysisNode", competitorAgent)
+    .addNode("swotAnalysisNode", swotAgent)
+    .addNode("productManagerNode", productManagerAgent)
+    .addNode("techArchitectNode", techArchitectAgent)
+    .addNode("scoringNode", scoringAgent)
 
-    .addEdge("__start__", "marketResearch")
-    .addEdge("marketResearch", "competitorAnalysis")
-    .addEdge("competitorAnalysis", "swotAnalysis")
-    .addEdge("swotAnalysis", "productManager")
-    .addEdge("productManager", "techArchitect")
-    .addEdge("techArchitect", "scoring")
-    .addEdge("scoring", "__end__");
+    .addEdge("__start__", "marketResearchNode")
+    .addEdge("marketResearchNode", "competitorAnalysisNode")
+    .addEdge("competitorAnalysisNode", "swotAnalysisNode")
+    .addEdge("swotAnalysisNode", "productManagerNode")
+    .addEdge("productManagerNode", "techArchitectNode")
+    .addEdge("techArchitectNode", "scoringNode")
+    .addEdge("scoringNode", "__end__");
 
   return workflow.compile();
 };

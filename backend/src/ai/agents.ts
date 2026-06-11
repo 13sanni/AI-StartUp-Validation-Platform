@@ -5,29 +5,24 @@ import { PromptTemplate } from "@langchain/core/prompts";
 
 export const marketResearchAgent = async (state: StartupState) => {
   console.log("--- Market Research Agent ---");
-  const parser = StructuredOutputParser.fromZodSchema(
-    z.object({
-      marketTrend: z.string().describe("Overall trend of the market (e.g., Growing rapidly)"),
-      targetUsers: z.array(z.string()).describe("List of target user personas"),
-      painPoints: z.array(z.string()).describe("Key pain points the startup solves"),
-    })
-  );
+  const schema = z.object({
+    marketTrend: z.string().describe("Overall trend of the market (e.g., Growing rapidly)"),
+    targetUsers: z.array(z.string()).describe("List of target user personas"),
+    painPoints: z.array(z.string()).describe("Key pain points the startup solves"),
+  });
 
   const prompt = PromptTemplate.fromTemplate(
     `You are an expert Market Research Analyst. Analyze the following startup idea.
 Idea: {idea}
 Target Audience: {audience}
-Country: {country}
-
-{format_instructions}`
+Country: {country}`
   );
 
-  const chain = prompt.pipe(llm).pipe(parser);
+  const chain = prompt.pipe(llm.withStructuredOutput(schema)).withRetry({ stopAfterAttempt: 3 });
   const result = await chain.invoke({
     idea: state.idea,
     audience: state.audience || "Global",
     country: state.country || "Worldwide",
-    format_instructions: parser.getFormatInstructions(),
   });
 
   return { marketResearch: result };
@@ -58,32 +53,27 @@ export const competitorAgent = async (state: StartupState) => {
     }
   }
 
-  const parser = StructuredOutputParser.fromZodSchema(
-    z.object({
-      competitors: z.array(
-        z.object({
-          name: z.string(),
-          strength: z.string(),
-          weakness: z.string(),
-        })
-      ),
-      opportunity: z.string().describe("The gap or opportunity in the market"),
-    })
-  );
+  const schema = z.object({
+    competitors: z.array(
+      z.object({
+        name: z.string(),
+        strength: z.string(),
+        weakness: z.string(),
+      })
+    ),
+    opportunity: z.string().describe("The gap or opportunity in the market"),
+  });
 
   const prompt = PromptTemplate.fromTemplate(
     `You are a Competitive Intelligence Agent. Identify competitors for this startup idea and find a market gap.
 Idea: {idea}
-Live Search Results: {searchResults}
-
-{format_instructions}`
+Live Search Results: {searchResults}`
   );
 
-  const chain = prompt.pipe(llm).pipe(parser);
+  const chain = prompt.pipe(llm.withStructuredOutput(schema)).withRetry({ stopAfterAttempt: 3 });
   const result = await chain.invoke({
     idea: state.idea,
     searchResults: searchResults,
-    format_instructions: parser.getFormatInstructions(),
   });
 
   return { competitors: result };
@@ -91,28 +81,23 @@ Live Search Results: {searchResults}
 
 export const swotAgent = async (state: StartupState) => {
   console.log("--- SWOT Agent ---");
-  const parser = StructuredOutputParser.fromZodSchema(
-    z.object({
-      strengths: z.array(z.string()),
-      weaknesses: z.array(z.string()),
-      opportunities: z.array(z.string()),
-      threats: z.array(z.string()),
-    })
-  );
+  const schema = z.object({
+    strengths: z.array(z.string()),
+    weaknesses: z.array(z.string()),
+    opportunities: z.array(z.string()),
+    threats: z.array(z.string()),
+  });
 
   const prompt = PromptTemplate.fromTemplate(
     `You are a Strategic Business Consultant. Create a SWOT analysis for this startup.
 Idea: {idea}
-Market Info: {marketInfo}
-
-{format_instructions}`
+Market Info: {marketInfo}`
   );
 
-  const chain = prompt.pipe(llm).pipe(parser);
+  const chain = prompt.pipe(llm.withStructuredOutput(schema)).withRetry({ stopAfterAttempt: 3 });
   const result = await chain.invoke({
     idea: state.idea,
     marketInfo: JSON.stringify(state.marketResearch),
-    format_instructions: parser.getFormatInstructions(),
   });
 
   return { swot: result };
@@ -120,25 +105,20 @@ Market Info: {marketInfo}
 
 export const productManagerAgent = async (state: StartupState) => {
   console.log("--- Product Manager Agent ---");
-  const parser = StructuredOutputParser.fromZodSchema(
-    z.object({
-      mvpFeatures: z.array(z.string()).describe("List of core features for version 1"),
-      v2Features: z.array(z.string()).describe("List of features for version 2"),
-      v3Features: z.array(z.string()).describe("List of features for version 3"),
-    })
-  );
+  const schema = z.object({
+    mvpFeatures: z.array(z.string()).describe("List of core features for version 1"),
+    v2Features: z.array(z.string()).describe("List of features for version 2"),
+    v3Features: z.array(z.string()).describe("List of features for version 3"),
+  });
 
   const prompt = PromptTemplate.fromTemplate(
     `You are a Senior Product Manager. Define the MVP and future roadmap.
-Idea: {idea}
-
-{format_instructions}`
+Idea: {idea}`
   );
 
-  const chain = prompt.pipe(llm).pipe(parser);
+  const chain = prompt.pipe(llm.withStructuredOutput(schema)).withRetry({ stopAfterAttempt: 3 });
   const result = await chain.invoke({
     idea: state.idea,
-    format_instructions: parser.getFormatInstructions(),
   });
 
   return { productMVP: result };
@@ -146,29 +126,24 @@ Idea: {idea}
 
 export const techArchitectAgent = async (state: StartupState) => {
   console.log("--- Tech Architect Agent ---");
-  const parser = StructuredOutputParser.fromZodSchema(
-    z.object({
-      frontend: z.string(),
-      backend: z.string(),
-      database: z.string(),
-      cloud: z.string(),
-      modules: z.array(z.string()).describe("Key software modules to build (e.g., Auth, Payments)"),
-    })
-  );
+  const schema = z.object({
+    frontend: z.string(),
+    backend: z.string(),
+    database: z.string(),
+    cloud: z.string(),
+    modules: z.array(z.string()).describe("Key software modules to build (e.g., Auth, Payments)"),
+  });
 
   const prompt = PromptTemplate.fromTemplate(
     `You are a Senior Software Architect. Recommend the optimal tech stack for this MVP.
 Idea: {idea}
-MVP Features: {mvp}
-
-{format_instructions}`
+MVP Features: {mvp}`
   );
 
-  const chain = prompt.pipe(llm).pipe(parser);
+  const chain = prompt.pipe(llm.withStructuredOutput(schema)).withRetry({ stopAfterAttempt: 3 });
   const result = await chain.invoke({
     idea: state.idea,
     mvp: JSON.stringify(state.productMVP),
-    format_instructions: parser.getFormatInstructions(),
   });
 
   return { techStack: result };
@@ -176,30 +151,25 @@ MVP Features: {mvp}
 
 export const scoringAgent = async (state: StartupState) => {
   console.log("--- Scoring Agent ---");
-  const parser = StructuredOutputParser.fromZodSchema(
-    z.object({
-      score: z.number().min(1).max(100).describe("Overall viability score from 1 to 100"),
-      reasoning: z.string().describe("Short explanation of the score"),
-    })
-  );
+  const schema = z.object({
+    score: z.number().min(1).max(100).describe("Overall viability score from 1 to 100"),
+    reasoning: z.string().describe("Short explanation of the score"),
+  });
 
   const prompt = PromptTemplate.fromTemplate(
     `You are a seasoned Venture Capitalist. Based on the following analysis, score this startup idea's viability from 1 to 100.
 Idea: {idea}
 Market: {market}
 SWOT: {swot}
-Competitors: {competitors}
-
-{format_instructions}`
+Competitors: {competitors}`
   );
 
-  const chain = prompt.pipe(llm).pipe(parser);
+  const chain = prompt.pipe(llm.withStructuredOutput(schema)).withRetry({ stopAfterAttempt: 3 });
   const result = await chain.invoke({
     idea: state.idea,
     market: JSON.stringify(state.marketResearch),
     swot: JSON.stringify(state.swot),
     competitors: JSON.stringify(state.competitors),
-    format_instructions: parser.getFormatInstructions(),
   });
 
   return { viabilityScore: result };

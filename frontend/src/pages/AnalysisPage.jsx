@@ -133,26 +133,36 @@ function AnalysisPageContent() {
   }, [visibleLogs])
 
   const [backendResult, setBackendResult] = useState(null)
+  const [backendError, setBackendError] = useState(null)
 
-  // Trigger backend analysis
+  // Trigger backend analysis (once only)
   useEffect(() => {
     if (!idea) return;
+
+    const controller = new AbortController();
     const runAnalysis = async () => {
       try {
         const res = await fetch('http://localhost:5000/api/analyze', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ idea, audience: 'Global', country: 'Worldwide', userId: user?.id || null })
+          body: JSON.stringify({ idea, audience: 'Global', country: 'Worldwide', userId: user?.id || null }),
+          signal: controller.signal
         });
         const data = await res.json();
         if (data.report) {
           setBackendResult(data.report);
+        } else if (data.error) {
+          setBackendError(data.error);
         }
       } catch (err) {
-        console.error("Backend analysis failed:", err);
+        if (err.name !== 'AbortError') {
+          console.error("Backend analysis failed:", err);
+          setBackendError("Analysis failed. Please try again later.");
+        }
       }
     };
     runAnalysis();
+    return () => controller.abort();
   }, [idea]);
 
   // Navigate to report when both visual steps and backend are done
@@ -177,6 +187,27 @@ function AnalysisPageContent() {
 
 
   const isComplete = completedSteps.length === analysisSteps.length
+
+  if (backendError) {
+    return (
+      <motion.main
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="min-h-screen flex items-center justify-center pt-20 pb-12"
+      >
+        <div className="glass-card p-10 max-w-lg text-center">
+          <div className="w-16 h-16 rounded-2xl bg-red-500/15 flex items-center justify-center mx-auto mb-6">
+            <span className="text-3xl">⚠️</span>
+          </div>
+          <h2 className="text-xl font-bold text-white mb-3">Analysis Failed</h2>
+          <p className="text-white/50 text-sm mb-6 leading-relaxed">{backendError}</p>
+          <button className="btn-primary" onClick={() => navigate('/')}>
+            ← Try Again
+          </button>
+        </div>
+      </motion.main>
+    )
+  }
 
   return (
     <motion.main
@@ -316,15 +347,15 @@ function AnalysisPageContent() {
               style={{ scrollBehavior: 'smooth' }}
             >
               <AnimatePresence>
-                {visibleLogs.map((line, i) => (
+                {visibleLogs.filter(Boolean).map((line, i) => (
                   <motion.div
                     key={i}
                     initial={{ opacity: 0, y: 5 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.2 }}
                     className={`leading-relaxed ${
-                      line.includes('✓') ? 'text-brand-green' :
-                      line.includes('>') ? 'text-brand-accent/70' :
+                      line?.includes?.('✓') ? 'text-brand-green' :
+                      line?.includes?.('>') ? 'text-brand-accent/70' :
                       'text-white/30'
                     }`}
                   >
