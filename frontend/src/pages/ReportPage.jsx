@@ -364,10 +364,16 @@ export default function ReportPage() {
                   const html2pdf = (await import('html2pdf.js')).default
                   const element = reportRef.current
                   const opt = {
-                    margin: [10, 10, 10, 10],
+                    margin: [15, 15, 15, 15],
                     filename: `LaunchLens-Report-${idea.slice(0, 30).replace(/\s+/g, '-')}.pdf`,
-                    image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2, useCORS: true, backgroundColor: '#0d0f1c' },
+                    image: { type: 'jpeg', quality: 1 },
+                    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
+                    html2canvas: { 
+                      scale: 2, 
+                      useCORS: true, 
+                      backgroundColor: '#07080f', 
+                      windowWidth: 1024 
+                    },
                     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
                   }
                   await html2pdf().set(opt).from(element).save()

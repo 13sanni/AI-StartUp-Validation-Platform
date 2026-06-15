@@ -3,8 +3,12 @@ import { llm, StartupState } from "./orchestrator";
 import { StructuredOutputParser } from "@langchain/core/output_parsers";
 import { PromptTemplate } from "@langchain/core/prompts";
 
+// Helper function to delay execution and avoid Gemini 15 RPM free tier rate limit
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 export const marketResearchAgent = async (state: StartupState) => {
   console.log("--- Market Research Agent ---");
+  await delay(4000); // 4-second delay to space out API calls
   const schema = z.object({
     marketTrend: z.string().describe("Overall trend of the market (e.g., Growing rapidly)"),
     targetUsers: z.array(z.string()).describe("List of target user personas"),
@@ -31,6 +35,7 @@ Country: {country}`
 
 export const competitorAgent = async (state: StartupState) => {
   console.log("--- Competitor Agent ---");
+  await delay(4000); // 4-second delay
   
   let searchResults = "No live search results available. Rely on internal knowledge.";
   if (process.env.TAVILY_API_KEY) {
@@ -81,6 +86,7 @@ Live Search Results: {searchResults}`
 
 export const swotAgent = async (state: StartupState) => {
   console.log("--- SWOT Agent ---");
+  await delay(4000); // 4-second delay
   const schema = z.object({
     strengths: z.array(z.string()),
     weaknesses: z.array(z.string()),
@@ -105,6 +111,7 @@ Market Info: {marketInfo}`
 
 export const productManagerAgent = async (state: StartupState) => {
   console.log("--- Product Manager Agent ---");
+  await delay(4000); // 4-second delay
   const schema = z.object({
     mvpFeatures: z.array(z.string()).describe("List of core features for version 1"),
     v2Features: z.array(z.string()).describe("List of features for version 2"),
@@ -126,6 +133,7 @@ Idea: {idea}`
 
 export const techArchitectAgent = async (state: StartupState) => {
   console.log("--- Tech Architect Agent ---");
+  await delay(4000); // 4-second delay
   const schema = z.object({
     frontend: z.string(),
     backend: z.string(),
@@ -151,6 +159,7 @@ MVP Features: {mvp}`
 
 export const scoringAgent = async (state: StartupState) => {
   console.log("--- Scoring Agent ---");
+  await delay(4000); // 4-second delay
   const schema = z.object({
     score: z.number().min(1).max(100).describe("Overall viability score from 1 to 100"),
     reasoning: z.string().describe("Short explanation of the score"),

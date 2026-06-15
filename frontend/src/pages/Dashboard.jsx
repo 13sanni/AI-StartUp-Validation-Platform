@@ -5,6 +5,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { logout } from '../store/authSlice';
 import { FileText, LogOut, Plus, Clock, Loader2, Rocket } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { API_URL } from '../lib/api';
 
 export default function Dashboard() {
   const { user, isAuthenticated } = useSelector((state) => state.auth);
@@ -29,7 +30,7 @@ export default function Dashboard() {
 
     const fetchHistory = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/analyze/history?userId=${user.id}`);
+        const res = await fetch(`${API_URL}/api/analyze/history?userId=${user.id}`);
         const data = await res.json();
         if (data.history) {
           setValidations(data.history);

@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import { setCredentials } from '../store/authSlice';
 import { UserPlus, Mail, Lock, User } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { API_URL } from '../lib/api';
 
 export default function Signup() {
   const [name, setName] = useState('');
@@ -16,7 +17,7 @@ export default function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:5000/api/auth/register', {
+      const res = await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password })

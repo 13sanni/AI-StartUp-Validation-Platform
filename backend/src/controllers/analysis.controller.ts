@@ -60,7 +60,11 @@ export const analyzeIdea = async (req: Request, res: Response): Promise<void> =>
           }
         }
       }
-      actualUserId = guestUser.id;
+      actualUserId = guestUser!.id;
+      if (!actualUserId) {
+        res.status(500).json({ error: 'Failed to resolve user account' });
+        return;
+      }
     }
 
     // 1. Create Project and Analysis in DB
@@ -92,9 +96,20 @@ export const analyzeIdea = async (req: Request, res: Response): Promise<void> =>
       // Run LangGraph workflow with agent logging
       const startTime = Date.now();
       const workflow = createWorkflow();
-      finalState = await logAgent(analysis.id, 'LangGraph Pipeline', { idea, audience, country }, async () => {
-        return await workflow.invoke({ idea, audience, country });
-      });
+      try {
+        finalState = await logAgent(analysis.id, 'LangGraph Pipeline', { idea, audience, country }, async () => {
+          return await workflow.invoke({ idea, audience, country });
+        });
+      } catch (pipelineError) {
+        console.error('AI Pipeline failed:', pipelineError);
+        // Mark analysis as FAILED so it doesn't stay stuck as PROCESSING
+        await prisma.analysis.update({
+          where: { id: analysis.id },
+          data: { status: 'FAILED' }
+        });
+        res.status(500).json({ error: 'AI analysis pipeline failed. This is likely a rate limit issue — please try again in a minute.' });
+        return;
+      }
       totalMs = Date.now() - startTime;
       console.log(`✅ AI Pipeline completed in ${(totalMs / 1000).toFixed(1)}s`);
 

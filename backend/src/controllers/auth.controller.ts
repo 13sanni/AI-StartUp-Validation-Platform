@@ -4,7 +4,9 @@ import jwt from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret';
+
+// JWT_SECRET is validated at startup in index.ts — safe to assert here
+const JWT_SECRET = process.env.JWT_SECRET!;
 
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -12,6 +14,19 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
     if (!email || !password) {
       res.status(400).json({ error: 'Email and password are required' });
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      res.status(400).json({ error: 'Invalid email format' });
+      return;
+    }
+
+    // Enforce minimum password length
+    if (password.length < 8) {
+      res.status(400).json({ error: 'Password must be at least 8 characters' });
       return;
     }
 

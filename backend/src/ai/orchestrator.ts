@@ -5,11 +5,12 @@ import dotenv from "dotenv";
 dotenv.config();
 
 // Initialize the Gemini Model
+// NOTE: Retry logic is handled per-chain in agents.ts via .withRetry()
+// Do NOT add maxRetries here — it would compound with chain-level retries
 export const llm = new ChatGoogleGenerativeAI({
   model: "gemini-2.5-flash",
   maxOutputTokens: 2048,
   apiKey: process.env.GOOGLE_API_KEY,
-  maxRetries: 2
 });
 
 export const GraphState = Annotation.Root({

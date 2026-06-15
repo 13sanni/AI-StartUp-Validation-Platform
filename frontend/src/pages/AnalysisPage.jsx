@@ -6,6 +6,7 @@ import {
   Search, Users, DollarSign, Shield, Map, BarChart3,
   CheckCircle2, Loader2,
 } from 'lucide-react'
+import { API_URL } from '../lib/api'
 
 // ─── Analysis Steps ───────────────────────────────────
 const analysisSteps = [
@@ -142,12 +143,22 @@ function AnalysisPageContent() {
     const controller = new AbortController();
     const runAnalysis = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/analyze', {
+        const res = await fetch(`${API_URL}/api/analyze`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ idea, audience: 'Global', country: 'Worldwide', userId: user?.id || null }),
           signal: controller.signal
         });
+        if (!res.ok) {
+          const errText = await res.text();
+          try {
+            const errJson = JSON.parse(errText);
+            setBackendError(errJson.error || `Server error (${res.status})`);
+          } catch {
+            setBackendError(`Server error (${res.status}): ${errText.slice(0, 200)}`);
+          }
+          return;
+        }
         const data = await res.json();
         if (data.report) {
           setBackendResult(data.report);

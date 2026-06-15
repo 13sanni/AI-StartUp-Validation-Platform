@@ -1,8 +1,18 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+// Safely parse stored user from localStorage
+function getStoredUser() {
+  try {
+    const stored = localStorage.getItem('user');
+    return stored ? JSON.parse(stored) : null;
+  } catch {
+    return null;
+  }
+}
+
 const initialState = {
   token: localStorage.getItem('token') || null,
-  user: null,
+  user: getStoredUser(),
   isAuthenticated: !!localStorage.getItem('token'),
 };
 
@@ -15,12 +25,14 @@ const authSlice = createSlice({
       state.token = action.payload.token;
       state.isAuthenticated = true;
       localStorage.setItem('token', action.payload.token);
+      localStorage.setItem('user', JSON.stringify(action.payload.user));
     },
     logout: (state) => {
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
       localStorage.removeItem('token');
+      localStorage.removeItem('user');
     },
   },
 });

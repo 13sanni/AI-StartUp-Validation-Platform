@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import { setCredentials } from '../store/authSlice';
 import { LogIn, Mail, Lock } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { API_URL } from '../lib/api';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -15,7 +16,7 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:5000/api/auth/login', {
+      const res = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
