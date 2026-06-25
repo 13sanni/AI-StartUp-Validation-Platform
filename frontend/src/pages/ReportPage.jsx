@@ -145,12 +145,12 @@ export default function ReportPage() {
           <div className="hidden lg:block w-48 shrink-0">
             <div className="sticky top-28 space-y-4">
               <h3 className="text-xs font-bold text-white/40 uppercase tracking-wider mb-4">Contents</h3>
-              <a href="#summary" className="block text-sm text-white/50 hover:text-white transition-colors border-l-2 border-transparent hover:border-white pl-3">Summary</a>
-              {marketResearch && <a href="#market" className="block text-sm text-white/50 hover:text-white transition-colors border-l-2 border-transparent hover:border-white pl-3">Market Dynamics</a>}
-              {competitors?.competitors && <a href="#competitors" className="block text-sm text-white/50 hover:text-white transition-colors border-l-2 border-transparent hover:border-white pl-3">Competitors</a>}
-              {swot && <a href="#swot" className="block text-sm text-white/50 hover:text-white transition-colors border-l-2 border-transparent hover:border-white pl-3">SWOT Analysis</a>}
-              {productMVP && <a href="#roadmap" className="block text-sm text-white/50 hover:text-white transition-colors border-l-2 border-transparent hover:border-white pl-3">MVP Roadmap</a>}
-              {techStack && <a href="#tech" className="block text-sm text-white/50 hover:text-white transition-colors border-l-2 border-transparent hover:border-white pl-3">Tech Stack</a>}
+              <button onClick={() => document.getElementById('summary')?.scrollIntoView({ behavior: 'smooth' })} className="block text-left w-full text-sm text-white/50 hover:text-white transition-colors border-l-2 border-transparent hover:border-white pl-3 pb-1 pt-1">Summary</button>
+              {marketResearch && <button onClick={() => document.getElementById('market')?.scrollIntoView({ behavior: 'smooth' })} className="block text-left w-full text-sm text-white/50 hover:text-white transition-colors border-l-2 border-transparent hover:border-white pl-3 pb-1 pt-1">Market Dynamics</button>}
+              {competitors?.competitors && <button onClick={() => document.getElementById('competitors')?.scrollIntoView({ behavior: 'smooth' })} className="block text-left w-full text-sm text-white/50 hover:text-white transition-colors border-l-2 border-transparent hover:border-white pl-3 pb-1 pt-1">Competitors</button>}
+              {swot && <button onClick={() => document.getElementById('swot')?.scrollIntoView({ behavior: 'smooth' })} className="block text-left w-full text-sm text-white/50 hover:text-white transition-colors border-l-2 border-transparent hover:border-white pl-3 pb-1 pt-1">SWOT Analysis</button>}
+              {productMVP && <button onClick={() => document.getElementById('roadmap')?.scrollIntoView({ behavior: 'smooth' })} className="block text-left w-full text-sm text-white/50 hover:text-white transition-colors border-l-2 border-transparent hover:border-white pl-3 pb-1 pt-1">MVP Roadmap</button>}
+              {techStack && <button onClick={() => document.getElementById('tech')?.scrollIntoView({ behavior: 'smooth' })} className="block text-left w-full text-sm text-white/50 hover:text-white transition-colors border-l-2 border-transparent hover:border-white pl-3 pb-1 pt-1">Tech Stack</button>}
             </div>
           </div>
 
