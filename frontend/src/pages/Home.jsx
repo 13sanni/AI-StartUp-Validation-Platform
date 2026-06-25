@@ -85,9 +85,9 @@ export default function Home() {
       {/* ────── HERO ────── */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
         {/* Ambient orbs */}
-        <div className="orb w-[500px] h-[500px] bg-brand-primary/20 -top-40 -left-40" />
-        <div className="orb w-[400px] h-[400px] bg-brand-secondary/15 -bottom-32 -right-32" />
-        <div className="orb w-[300px] h-[300px] bg-brand-accent/10 top-1/3 right-1/4" />
+        <div className="orb w-[500px] h-[500px] bg-white/5 -top-40 -left-40" />
+        <div className="orb w-[400px] h-[400px] bg-white/5 -bottom-32 -right-32" />
+        <div className="orb w-[300px] h-[300px] bg-white/5 top-1/3 right-1/4" />
 
         <div className="container relative z-10 text-center max-w-4xl">
           <motion.div variants={stagger} initial="hidden" animate="visible">
@@ -127,7 +127,7 @@ export default function Home() {
               <div
                 className={`
                   glass-card p-2 transition-all duration-300
-                  ${isFocused ? 'border-brand-primary/40 shadow-glow' : ''}
+                  ${isFocused ? 'border-white/40 shadow-glow' : ''}
                 `}
               >
                 <textarea
@@ -199,8 +199,8 @@ export default function Home() {
                     0{i + 1}
                   </div>
 
-                  <div className="w-14 h-14 rounded-2xl bg-brand-primary/10 flex items-center justify-center mx-auto mb-5 group-hover:bg-brand-primary/20 transition-colors">
-                    <step.icon size={24} className="text-brand-primary" />
+                  <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mx-auto mb-5 group-hover:bg-white/10 transition-colors">
+                    <step.icon size={24} className="text-white" />
                   </div>
                   <h3 className="text-lg font-bold mb-2 text-white">{step.title}</h3>
                   <p className="text-white/40 text-sm leading-relaxed">{step.desc}</p>
@@ -213,7 +213,7 @@ export default function Home() {
 
       {/* ────── FEATURES ────── */}
       <section className="section-padding relative overflow-hidden">
-        <div className="orb w-[400px] h-[400px] bg-brand-green/10 top-0 right-0" />
+        <div className="orb w-[400px] h-[400px] bg-white/5 top-0 right-0" />
         <div className="container relative z-10">
           <motion.div
             initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }}
@@ -236,7 +236,7 @@ export default function Home() {
                 >
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 rounded-xl bg-white/[0.04] flex items-center justify-center shrink-0 group-hover:bg-white/[0.08] transition-colors">
-                      <feat.icon size={22} className="text-brand-accent" />
+                      <feat.icon size={22} className="text-white" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2 mb-2">
@@ -280,7 +280,7 @@ export default function Home() {
 
       {/* ────── CTA ────── */}
       <section className="section-padding relative overflow-hidden">
-        <div className="orb w-[500px] h-[500px] bg-brand-primary/15 -bottom-60 left-1/2 -translate-x-1/2" />
+        <div className="orb w-[500px] h-[500px] bg-white/5 -bottom-60 left-1/2 -translate-x-1/2" />
         <div className="container relative z-10 text-center">
           <motion.div
             initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }}

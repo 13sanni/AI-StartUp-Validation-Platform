@@ -236,15 +236,15 @@ function AnalysisPageContent() {
             {/* Header */}
             <div className="flex items-center gap-3 mb-2">
               <div className="relative">
-                <div className="w-10 h-10 rounded-xl bg-brand-primary/15 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
                   {isComplete ? (
-                    <CheckCircle2 size={20} className="text-brand-green" />
+                    <CheckCircle2 size={20} className="text-white" />
                   ) : (
-                    <Loader2 size={20} className="text-brand-primary animate-spin" />
+                    <Loader2 size={20} className="text-white animate-spin" />
                   )}
                 </div>
                 {!isComplete && (
-                  <div className="absolute inset-0 rounded-xl border-2 border-brand-primary/30 animate-pulse-ring" />
+                  <div className="absolute inset-0 rounded-xl border-2 border-white/30 animate-pulse-ring" />
                 )}
               </div>
               <div>
@@ -273,7 +273,7 @@ function AnalysisPageContent() {
                 <motion.div
                   className="h-full rounded-full"
                   style={{
-                    background: 'linear-gradient(90deg, #6c63ff, #f72585)',
+                    background: '#ffffff',
                   }}
                   initial={{ width: 0 }}
                   animate={{ width: `${Math.min(progress, 100)}%` }}
@@ -297,13 +297,13 @@ function AnalysisPageContent() {
                     transition={{ delay: i * 0.1, duration: 0.3 }}
                     className={`
                       flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300
-                      ${isDone ? 'bg-brand-green/[0.06]' : ''}
-                      ${isCurrent ? 'bg-brand-primary/[0.08] border border-brand-primary/20' : 'border border-transparent'}
+                      ${isDone ? 'bg-white/[0.06]' : ''}
+                      ${isCurrent ? 'bg-white/[0.08] border border-white/20' : 'border border-transparent'}
                     `}
                   >
                     <div className={`
                       w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors
-                      ${isDone ? 'bg-brand-green/15' : isCurrent ? 'bg-brand-primary/15' : 'bg-white/[0.04]'}
+                      ${isDone ? 'bg-white/15' : isCurrent ? 'bg-white/10' : 'bg-white/[0.04]'}
                     `}>
                       {isDone ? (
                         <motion.div
@@ -311,17 +311,17 @@ function AnalysisPageContent() {
                           animate={{ scale: 1, rotate: 0 }}
                           transition={{ type: 'spring', stiffness: 400, damping: 15 }}
                         >
-                          <CheckCircle2 size={16} className="text-brand-green" />
+                          <CheckCircle2 size={16} className="text-white" />
                         </motion.div>
                       ) : isCurrent ? (
-                        <Loader2 size={16} className="text-brand-primary animate-spin" />
+                        <Loader2 size={16} className="text-white animate-spin" />
                       ) : (
                         <Icon size={16} className="text-white/20" />
                       )}
                     </div>
 
                     <span className={`text-sm transition-colors ${
-                      isDone ? 'text-brand-green/80' : isCurrent ? 'text-white' : 'text-white/25'
+                      isDone ? 'text-white/80' : isCurrent ? 'text-white' : 'text-white/25'
                     }`}>
                       {step.label}
                     </span>
@@ -330,7 +330,7 @@ function AnalysisPageContent() {
                       <motion.span
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="ml-auto text-xs text-brand-green/50"
+                        className="ml-auto text-xs text-white/50"
                       >
                         Done
                       </motion.span>
@@ -345,9 +345,9 @@ function AnalysisPageContent() {
           <div className="glass-card p-6 flex flex-col">
             <div className="flex items-center gap-2 mb-4">
               <div className="flex gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-full bg-brand-secondary/60" />
-                <div className="w-2.5 h-2.5 rounded-full bg-brand-orange/60" />
-                <div className="w-2.5 h-2.5 rounded-full bg-brand-green/60" />
+                <div className="w-2.5 h-2.5 rounded-full bg-white/20" />
+                <div className="w-2.5 h-2.5 rounded-full bg-white/20" />
+                <div className="w-2.5 h-2.5 rounded-full bg-white/20" />
               </div>
               <span className="text-white/20 text-xs font-mono ml-2">launchlens-ai-engine</span>
             </div>
@@ -365,8 +365,8 @@ function AnalysisPageContent() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.2 }}
                     className={`leading-relaxed ${
-                      line?.includes?.('✓') ? 'text-brand-green' :
-                      line?.includes?.('>') ? 'text-brand-accent/70' :
+                      line?.includes?.('✓') ? 'text-white font-bold' :
+                      line?.includes?.('>') ? 'text-white/70' :
                       'text-white/30'
                     }`}
                   >
@@ -378,8 +378,8 @@ function AnalysisPageContent() {
               {/* Blinking cursor */}
               {!isComplete && (
                 <div className="flex items-center gap-1 mt-1">
-                  <span className="text-brand-primary/60">{'>'}</span>
-                  <span className="w-2 h-4 bg-brand-primary/50 animate-pulse" />
+                  <span className="text-white/60">{'>'}</span>
+                  <span className="w-2 h-4 bg-white/50 animate-pulse" />
                 </div>
               )}
             </div>

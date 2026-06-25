@@ -79,14 +79,24 @@ export default function Dashboard() {
         </div>
 
         <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-          <Clock size={20} className="text-brand-primary" />
+          <Clock size={20} className="text-white" />
           Recent Validations
         </h2>
 
         {loading ? (
-          <div className="glass-card p-12 flex items-center justify-center">
-            <Loader2 size={24} className="text-brand-primary animate-spin" />
-            <span className="ml-3 text-white/50">Loading your validations...</span>
+          <div className="space-y-4 w-full">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="glass-card p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 w-full">
+                <div className="space-y-3 w-full md:w-2/3">
+                  <div className="h-6 w-3/4 rounded-md shimmer-bg"></div>
+                  <div className="h-4 w-1/3 rounded-md shimmer-bg"></div>
+                </div>
+                <div className="flex items-center gap-6 mt-4 md:mt-0">
+                  <div className="h-12 w-16 rounded-md shimmer-bg"></div>
+                  <div className="h-10 w-32 rounded-md shimmer-bg"></div>
+                </div>
+              </div>
+            ))}
           </div>
         ) : validations.length === 0 ? (
           <div className="glass-card p-12 text-center">
@@ -107,13 +117,13 @@ export default function Dashboard() {
                   <p className="text-sm text-white/40">
                     {new Date(val.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
                     {' • '}
-                    Status: <span className={val.status === 'COMPLETED' ? 'text-brand-green' : 'text-brand-orange'}>{val.status}</span>
+                    Status: <span className="text-white font-semibold">{val.status}</span>
                   </p>
                 </div>
                 <div className="flex items-center gap-6">
                   {val.score && (
                     <div className="text-center">
-                      <div className={`text-2xl font-bold ${val.score >= 70 ? 'text-brand-green' : val.score >= 50 ? 'text-brand-orange' : 'text-brand-secondary'}`}>{val.score}/100</div>
+                      <div className="text-2xl font-bold text-white">{val.score}/100</div>
                       <div className="text-xs text-white/40">Viability Score</div>
                     </div>
                   )}

@@ -45,7 +45,7 @@ export default function Login() {
     >
       <div className="container max-w-md">
         <div className="glass-card p-8">
-          <h2 className="section-heading text-3xl mb-2">Welcome <span className="text-gradient">Back</span></h2>
+          <h2 className="section-heading text-3xl mb-2">Welcome <span className="text-white">Back</span></h2>
           <p className="text-white/40 text-center mb-8">Login to view your startup validations.</p>
           
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -56,9 +56,7 @@ export default function Login() {
                   type="email" 
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Email Address"
-                  className="w-full bg-white/[0.04] border border-white/[0.07] rounded-xl py-3 pl-10 pr-4 text-white focus:outline-none focus:border-brand-primary/50 transition-colors"
-                  required
+                  className="w-full bg-white/[0.04] border border-white/[0.07] rounded-xl py-3 pl-10 pr-4 text-white focus:outline-none focus:border-white/50 transition-colors"
                 />
               </div>
             </div>
@@ -69,9 +67,7 @@ export default function Login() {
                   type="password" 
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Password"
-                  className="w-full bg-white/[0.04] border border-white/[0.07] rounded-xl py-3 pl-10 pr-4 text-white focus:outline-none focus:border-brand-primary/50 transition-colors"
-                  required
+                  className="w-full bg-white/[0.04] border border-white/[0.07] rounded-xl py-3 pl-10 pr-4 text-white focus:outline-none focus:border-white/50 transition-colors"
                 />
               </div>
             </div>
@@ -82,7 +78,7 @@ export default function Login() {
           </form>
           
           <p className="text-center text-sm text-white/40 mt-6">
-            Don't have an account? <Link to="/signup" className="text-brand-primary hover:underline">Sign up</Link>
+            Don't have an account? <Link to="/signup" className="text-white font-bold hover:underline">Sign up</Link>
           </p>
         </div>
       </div>

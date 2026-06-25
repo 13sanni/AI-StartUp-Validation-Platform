@@ -1,5 +1,5 @@
 /* ─── Google Fonts ─────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Syne:wght@700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 /* Tailwind base layers */
 @tailwind base;
@@ -16,47 +16,45 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Syne', 'Inter', sans-serif;
+    font-family: 'Inter', sans-serif;
     @apply tracking-tight leading-tight;
   }
 
   ::-webkit-scrollbar { width: 5px; }
   ::-webkit-scrollbar-track { @apply bg-dark-base; }
-  ::-webkit-scrollbar-thumb { @apply bg-white/10 rounded-full; }
-  ::-webkit-scrollbar-thumb:hover { @apply bg-brand-primary/60; }
+  ::-webkit-scrollbar-thumb { @apply bg-white/20 rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-white/40; }
 }
 
 /* ─── Custom Component Classes ──────────────── */
 @layer components {
 
-  /* Glass Card */
+  /* Glass Card -> Clean Black Card */
   .glass-card {
-    @apply bg-white/[0.04] border border-white/[0.07] rounded-2xl backdrop-blur-xl
-           transition-all duration-300;
+    @apply bg-[#050505] border border-white/10 rounded-xl transition-all duration-300;
     page-break-inside: avoid;
     break-inside: avoid;
   }
   .glass-card:hover {
-    @apply bg-white/[0.07] border-white/[0.12] shadow-glow;
+    @apply border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.03)] scale-[1.01] -translate-y-1;
   }
 
-  /* Gradient Text */
+  /* Gradient Text -> Solid White or light gray */
   .text-gradient {
-    @apply bg-grad-brand bg-clip-text text-transparent;
+    @apply text-white;
   }
   .text-gradient-green {
-    @apply bg-grad-green bg-clip-text text-transparent;
+    @apply text-white/80;
   }
   .text-gradient-accent {
-    @apply bg-grad-accent bg-clip-text text-transparent;
+    @apply text-white/90;
   }
 
-  /* Primary Button */
+  /* Primary Button - White filled */
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 px-7 py-3.5
-           bg-grad-brand text-white font-semibold rounded-full
-           shadow-[0_4px_24px_rgba(108,99,255,0.4)]
-           hover:shadow-[0_8px_32px_rgba(108,99,255,0.6)]
+           bg-white text-black font-semibold rounded-lg
+           hover:bg-gray-200
            hover:-translate-y-0.5 active:translate-y-0
            transition-all duration-200 cursor-pointer border-0
            disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none;
@@ -65,21 +63,21 @@
   /* Outline Button */
   .btn-outline {
     @apply inline-flex items-center justify-center gap-2 px-5 py-2.5
-           bg-transparent text-white/80 font-medium rounded-full
-           border border-white/10 hover:border-brand-primary hover:text-brand-primary
+           bg-transparent text-white font-medium rounded-lg
+           border border-white/20 hover:border-white hover:bg-white/5
            transition-all duration-200 cursor-pointer text-sm;
   }
 
   /* Badge */
   .badge {
     @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full
-           text-xs font-semibold tracking-wide uppercase;
+           text-xs font-semibold tracking-wide uppercase border border-white/20 bg-white/5 text-white;
   }
-  .badge-purple { @apply bg-brand-primary/10 text-brand-primary border border-brand-primary/25; }
-  .badge-green  { @apply bg-brand-green/10 text-brand-green border border-brand-green/25; }
-  .badge-pink   { @apply bg-brand-secondary/10 text-brand-secondary border border-brand-secondary/25; }
-  .badge-blue   { @apply bg-brand-accent/10 text-brand-accent border border-brand-accent/25; }
-  .badge-orange { @apply bg-brand-orange/10 text-brand-orange border border-brand-orange/25; }
+  .badge-purple { @apply border-white/20 bg-[#111] text-white; }
+  .badge-green  { @apply border-white/20 bg-[#111] text-white; }
+  .badge-pink   { @apply border-white/20 bg-[#111] text-white; }
+  .badge-blue   { @apply border-white/20 bg-[#111] text-white; }
+  .badge-orange { @apply border-white/20 bg-[#111] text-white; }
 
   /* Section wrapper */
   .section-padding { @apply py-20 md:py-28; }
@@ -92,10 +90,10 @@
   /* ─── Navbar ──────────────────────────────── */
   .navbar {
     @apply fixed top-0 left-0 right-0 z-50;
-    background: rgba(7, 8, 15, 0.7);
+    background: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(255,255,255,0.06);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
   }
   .navbar-inner {
     @apply flex items-center justify-between py-4;
@@ -104,32 +102,32 @@
     @apply flex items-center gap-2.5 no-underline;
   }
   .navbar-logo-icon {
-    @apply text-2xl;
+    @apply text-2xl text-white;
   }
   .navbar-logo-text {
     @apply text-lg font-bold text-white tracking-tight;
   }
   .navbar-logo-text span {
-    @apply text-gradient;
+    @apply text-white;
   }
 
   /* ─── Section Heading ─────────────────────── */
   .section-heading {
-    @apply text-3xl md:text-4xl font-extrabold text-center mb-4;
-    font-family: 'Syne', 'Inter', sans-serif;
+    @apply text-3xl md:text-4xl font-extrabold text-center mb-4 text-white;
   }
   .section-subheading {
     @apply text-white/50 text-center text-base md:text-lg max-w-2xl mx-auto mb-12;
   }
 }
 
-/* ─── Custom Utilities (things Tailwind can't do) ── */
+/* ─── Custom Utilities ── */
 @layer utilities {
 
-  /* Ambient orbs */
+  /* Ambient orbs - Make them subtle white/gray glows */
   .orb {
     @apply absolute rounded-full pointer-events-none;
-    filter: blur(80px);
+    filter: blur(100px);
+    background: rgba(255,255,255,0.03);
   }
 
   /* Shimmer loading skeleton */
@@ -145,32 +143,24 @@
   /* Score ring base */
   .score-ring-track {
     fill: none;
-    stroke: rgba(255,255,255,0.06);
+    stroke: rgba(255,255,255,0.1);
   }
   .score-ring-fill {
     fill: none;
+    stroke: #ffffff;
     stroke-linecap: round;
     transition: stroke-dashoffset 1.5s cubic-bezier(0.4,0,0.2,1);
   }
 
-  /* Noise overlay */
+  /* Noise overlay - Keep subtle */
   .noise-overlay {
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
-    @apply fixed inset-0 pointer-events-none z-[999] opacity-50;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");
+    @apply fixed inset-0 pointer-events-none z-[999] opacity-30;
   }
 
-  /* Gradient border trick */
+  /* Gradient border trick -> Solid subtle border */
   .gradient-border {
     position: relative;
-    border: 1px solid transparent;
-    background-clip: padding-box;
-  }
-  .gradient-border::before {
-    content: '';
-    position: absolute;
-    inset: -1px;
-    border-radius: inherit;
-    background: linear-gradient(135deg, rgba(108,99,255,0.5), rgba(247,37,133,0.3));
-    z-index: -1;
+    border: 1px solid rgba(255,255,255,0.1);
   }
 }

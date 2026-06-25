@@ -8,42 +8,42 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
-        display: ['Syne', 'Inter', 'sans-serif'],
+        display: ['Inter', 'system-ui', 'sans-serif'], // Removed Syne, using Inter everywhere for minimalism
       },
       colors: {
         brand: {
-          primary: '#6c63ff',
-          secondary: '#f72585',
-          accent: '#4cc9f0',
-          green: '#06d6a0',
-          orange: '#ffbe0b',
+          primary: '#ffffff', // Primary action is white
+          secondary: '#cccccc',
+          accent: '#ffffff',
+          green: '#ffffff',
+          orange: '#ffffff',
         },
         dark: {
-          base: '#07080f',
-          surface: '#0d0f1c',
-          card: 'rgba(255,255,255,0.04)',
-          'card-hover': 'rgba(255,255,255,0.08)',
-          glass: 'rgba(255,255,255,0.05)',
+          base: '#000000',     // Pure black background
+          surface: '#0a0a0a',  // Slightly lighter black for cards
+          card: '#0a0a0a',
+          'card-hover': '#111111',
+          glass: 'rgba(255,255,255,0.02)',
         },
       },
       backgroundImage: {
-        'grad-brand': 'linear-gradient(135deg, #6c63ff, #f72585)',
-        'grad-accent': 'linear-gradient(135deg, #4cc9f0, #6c63ff)',
-        'grad-green': 'linear-gradient(135deg, #06d6a0, #4cc9f0)',
-        'grad-orange': 'linear-gradient(135deg, #ffbe0b, #f72585)',
-        'grad-surface': 'linear-gradient(135deg, rgba(108,99,255,0.08), rgba(247,37,133,0.05))',
+        'grad-brand': 'linear-gradient(135deg, #ffffff, #cccccc)',
+        'grad-accent': 'linear-gradient(135deg, #ffffff, #aaaaaa)',
+        'grad-green': 'linear-gradient(135deg, #ffffff, #ffffff)',
+        'grad-orange': 'linear-gradient(135deg, #ffffff, #ffffff)',
+        'grad-surface': 'linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01))',
       },
       boxShadow: {
-        'glow': '0 0 40px rgba(108,99,255,0.2)',
-        'glow-green': '0 0 30px rgba(6,214,160,0.25)',
-        'glow-pink': '0 0 30px rgba(247,37,133,0.2)',
-        'glow-lg': '0 8px 40px rgba(108,99,255,0.35)',
-        'card': '0 4px 20px rgba(0,0,0,0.3)',
+        'glow': '0 0 40px rgba(255,255,255,0.05)',
+        'glow-green': '0 0 30px rgba(255,255,255,0.05)',
+        'glow-pink': '0 0 30px rgba(255,255,255,0.05)',
+        'glow-lg': '0 8px 40px rgba(255,255,255,0.08)',
+        'card': '0 4px 20px rgba(0,0,0,0.5)',
       },
       borderColor: {
-        subtle: 'rgba(255,255,255,0.07)',
-        medium: 'rgba(255,255,255,0.12)',
-        accent: 'rgba(108,99,255,0.4)',
+        subtle: 'rgba(255,255,255,0.05)',
+        medium: 'rgba(255,255,255,0.1)',
+        accent: 'rgba(255,255,255,0.3)',
       },
       animation: {
         'float': 'float 4s ease-in-out infinite',
@@ -79,8 +79,8 @@ export default {
           to: { opacity: '1', transform: 'scale(1)' },
         },
         agentPulse: {
-          '0%, 100%': { boxShadow: '0 0 0 0 rgba(108,99,255,0.4)' },
-          '50%': { boxShadow: '0 0 0 8px rgba(108,99,255,0)' },
+          '0%, 100%': { boxShadow: '0 0 0 0 rgba(255,255,255,0.2)' },
+          '50%': { boxShadow: '0 0 0 8px rgba(255,255,255,0)' },
         },
         shimmer: {
           '0%': { backgroundPosition: '-200% 0' },
@@ -96,8 +96,8 @@ export default {
           '100%': { transform: 'scale(1) rotate(0deg)', opacity: '1' },
         },
         borderGlow: {
-          '0%, 100%': { borderColor: 'rgba(108,99,255,0.3)' },
-          '50%': { borderColor: 'rgba(108,99,255,0.8)' },
+          '0%, 100%': { borderColor: 'rgba(255,255,255,0.1)' },
+          '50%': { borderColor: 'rgba(255,255,255,0.4)' },
         },
       },
     },

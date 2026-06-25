@@ -46,7 +46,7 @@ export default function Signup() {
     >
       <div className="container max-w-md">
         <div className="glass-card p-8">
-          <h2 className="section-heading text-3xl mb-2">Create <span className="text-gradient">Account</span></h2>
+          <h2 className="section-heading text-3xl mb-2">Create <span className="text-white">Account</span></h2>
           <p className="text-white/40 text-center mb-8">Join to start validating your startup ideas.</p>
           
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -57,9 +57,7 @@ export default function Signup() {
                   type="text" 
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Full Name"
-                  className="w-full bg-white/[0.04] border border-white/[0.07] rounded-xl py-3 pl-10 pr-4 text-white focus:outline-none focus:border-brand-primary/50 transition-colors"
-                  required
+                  className="w-full bg-white/[0.04] border border-white/[0.07] rounded-xl py-3 pl-10 pr-4 text-white focus:outline-none focus:border-white/50 transition-colors"
                 />
               </div>
             </div>
@@ -70,9 +68,7 @@ export default function Signup() {
                   type="email" 
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Email Address"
-                  className="w-full bg-white/[0.04] border border-white/[0.07] rounded-xl py-3 pl-10 pr-4 text-white focus:outline-none focus:border-brand-primary/50 transition-colors"
-                  required
+                  className="w-full bg-white/[0.04] border border-white/[0.07] rounded-xl py-3 pl-10 pr-4 text-white focus:outline-none focus:border-white/50 transition-colors"
                 />
               </div>
             </div>
@@ -83,9 +79,7 @@ export default function Signup() {
                   type="password" 
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Password"
-                  className="w-full bg-white/[0.04] border border-white/[0.07] rounded-xl py-3 pl-10 pr-4 text-white focus:outline-none focus:border-brand-primary/50 transition-colors"
-                  required
+                  className="w-full bg-white/[0.04] border border-white/[0.07] rounded-xl py-3 pl-10 pr-4 text-white focus:outline-none focus:border-white/50 transition-colors"
                 />
               </div>
             </div>
@@ -96,7 +90,7 @@ export default function Signup() {
           </form>
           
           <p className="text-center text-sm text-white/40 mt-6">
-            Already have an account? <Link to="/login" className="text-brand-primary hover:underline">Log in</Link>
+            Already have an account? <Link to="/login" className="text-white font-bold hover:underline">Log in</Link>
           </p>
         </div>
       </div>

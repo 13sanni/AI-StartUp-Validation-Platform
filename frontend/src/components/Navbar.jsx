@@ -22,7 +22,7 @@ export default function Navbar() {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <span className="badge badge-purple hidden md:inline-flex" style={{ fontSize: '0.7rem' }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--brand-primary)', display: 'inline-block', animation: 'agentPulse 2s infinite' }} />
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#ffffff', display: 'inline-block', animation: 'agentPulse 2s infinite' }} />
             Powered by Gemini AI
           </span>
           {location.pathname !== '/' && (
@@ -34,12 +34,12 @@ export default function Navbar() {
           {isAuthenticated ? (
             <div className="flex items-center gap-4 border-l border-white/10 pl-4 ml-2">
               <Link to="/dashboard" className="flex items-center gap-2 text-white/80 hover:text-white transition-colors" title="Dashboard">
-                <div className="w-8 h-8 rounded-full bg-brand-primary/20 flex items-center justify-center border border-brand-primary/30 text-brand-primary">
+                <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center border border-white/20 text-white">
                   <User size={16} />
                 </div>
                 <span className="text-sm font-medium hidden sm:block">{user?.name || 'Dashboard'}</span>
               </Link>
-              <button onClick={handleLogout} className="text-white/50 hover:text-brand-secondary transition-colors" title="Logout">
+              <button onClick={handleLogout} className="text-white/50 hover:text-white transition-colors" title="Logout">
                 <LogOut size={18} />
               </button>
             </div>

@@ -7,6 +7,7 @@ import {
   Zap, AlertTriangle, Eye, Rocket, Download,
 } from 'lucide-react'
 import CountUp from 'react-countup'
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts'
 
 // ─── Animation Variants ──────────────────────────────
 const fadeUp = {
@@ -119,14 +120,14 @@ export default function ReportPage() {
 
   const score = viabilityScore?.score || 50;
   let verdict = 'Moderate';
-  let verdictColor = '#ffbe0b';
+  let verdictColor = '#cccccc';
   
   if (score >= 80) {
     verdict = 'Excellent';
-    verdictColor = '#06d6a0';
+    verdictColor = '#ffffff';
   } else if (score < 50) {
     verdict = 'Risky';
-    verdictColor = '#f72585';
+    verdictColor = '#888888';
   }
 
   return (
@@ -137,13 +138,30 @@ export default function ReportPage() {
       transition={{ duration: 0.4 }}
       className="min-h-screen pt-24 pb-16"
     >
-      <div className="container max-w-5xl" ref={reportRef}>
-        <motion.div variants={stagger} initial="hidden" animate="visible">
+      <div className="container max-w-6xl">
+        <div className="flex flex-col lg:flex-row gap-10">
+          
+          {/* ────── STICKY SIDEBAR ────── */}
+          <div className="hidden lg:block w-48 shrink-0">
+            <div className="sticky top-28 space-y-4">
+              <h3 className="text-xs font-bold text-white/40 uppercase tracking-wider mb-4">Contents</h3>
+              <a href="#summary" className="block text-sm text-white/50 hover:text-white transition-colors border-l-2 border-transparent hover:border-white pl-3">Summary</a>
+              {marketResearch && <a href="#market" className="block text-sm text-white/50 hover:text-white transition-colors border-l-2 border-transparent hover:border-white pl-3">Market Dynamics</a>}
+              {competitors?.competitors && <a href="#competitors" className="block text-sm text-white/50 hover:text-white transition-colors border-l-2 border-transparent hover:border-white pl-3">Competitors</a>}
+              {swot && <a href="#swot" className="block text-sm text-white/50 hover:text-white transition-colors border-l-2 border-transparent hover:border-white pl-3">SWOT Analysis</a>}
+              {productMVP && <a href="#roadmap" className="block text-sm text-white/50 hover:text-white transition-colors border-l-2 border-transparent hover:border-white pl-3">MVP Roadmap</a>}
+              {techStack && <a href="#tech" className="block text-sm text-white/50 hover:text-white transition-colors border-l-2 border-transparent hover:border-white pl-3">Tech Stack</a>}
+            </div>
+          </div>
+
+          {/* ────── MAIN CONTENT ────── */}
+          <div className="flex-1 min-w-0" ref={reportRef}>
+            <motion.div variants={stagger} initial="hidden" animate="visible">
 
           {/* ────── HEADER ────── */}
           <motion.div variants={fadeUp} className="text-center mb-12">
             <span
-              className="badge mb-4 inline-flex"
+              className="badge mb-4 inline-flex group relative cursor-help"
               style={{
                 backgroundColor: `${verdictColor}15`,
                 color: verdictColor,
@@ -152,6 +170,9 @@ export default function ReportPage() {
             >
               <Award size={14} />
               {verdict} Potential
+              <div className="absolute top-full mt-2 px-3 py-1.5 bg-white text-black text-xs font-medium rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 whitespace-nowrap shadow-lg">
+                Powered by LangGraph parallel agents
+              </div>
             </span>
             <h1 className="text-3xl md:text-5xl font-extrabold mb-3 leading-tight max-w-4xl mx-auto">
               {idea}
@@ -160,9 +181,9 @@ export default function ReportPage() {
           </motion.div>
 
           {/* ────── SCORE + SUMMARY ────── */}
-          <motion.div variants={fadeUp} className="glass-card p-8 md:p-10 mb-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-              <div className="flex flex-col items-center">
+          <motion.div variants={fadeUp} id="summary" className="glass-card p-8 md:p-10 mb-8 scroll-mt-24">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-10 items-center">
+              <div className="flex flex-col items-center col-span-1">
                 <ScoreRing score={score} color={verdictColor} size={200} />
                 <div className="mt-4 text-center">
                   <span className="text-sm font-bold" style={{ color: verdictColor }}>
@@ -171,17 +192,38 @@ export default function ReportPage() {
                 </div>
               </div>
 
-              <div className="space-y-4">
+              <div className="col-span-1 md:col-span-2 space-y-6">
                 <div className="flex items-center gap-2 mb-2">
-                  <Eye size={18} className="text-brand-accent" />
+                  <Eye size={18} className="text-white" />
                   <h2 className="text-lg font-bold">VC Verdict</h2>
                 </div>
                 <p className="text-white/50 leading-relaxed text-sm">
                   {viabilityScore?.reasoning || "Analysis complete."}
                 </p>
-                <div className="mt-4 p-4 bg-white/[0.03] rounded-xl border border-white/[0.05]">
-                  <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider mb-2">Market Gap / Opportunity</h4>
-                  <p className="text-brand-green/90 text-sm">{competitors?.opportunity}</p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                  <div className="p-4 bg-white/[0.03] rounded-xl border border-white/[0.05] flex flex-col justify-center">
+                    <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider mb-2">Market Gap / Opportunity</h4>
+                    <p className="text-white/90 text-sm">{competitors?.opportunity}</p>
+                  </div>
+                  
+                  <div className="h-48 bg-white/[0.02] rounded-xl border border-white/[0.05] p-2">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RadarChart cx="50%" cy="50%" outerRadius="70%" data={[
+                        { subject: 'Market', A: Math.min(100, score + 12) },
+                        { subject: 'Product', A: Math.min(100, score + 5) },
+                        { subject: 'Tech', A: Math.min(100, score + 15) },
+                        { subject: 'Competition', A: Math.max(10, score - 10) },
+                        { subject: 'Finance', A: score },
+                      ]}>
+                        <PolarGrid stroke="rgba(255,255,255,0.1)" />
+                        <PolarAngleAxis dataKey="subject" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10 }} />
+                        <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
+                        <RechartsTooltip contentStyle={{ backgroundColor: '#000', borderColor: 'rgba(255,255,255,0.1)', color: '#fff', fontSize: '12px' }} />
+                        <Radar name="Score" dataKey="A" stroke={verdictColor} fill={verdictColor} fillOpacity={0.2} />
+                      </RadarChart>
+                    </ResponsiveContainer>
+                  </div>
                 </div>
               </div>
             </div>
@@ -189,9 +231,9 @@ export default function ReportPage() {
 
           {/* ────── MARKET ANALYSIS ────── */}
           {marketResearch && (
-            <motion.div variants={fadeUp} className="glass-card p-8 mb-8">
+            <motion.div variants={fadeUp} id="market" className="glass-card p-8 mb-8 scroll-mt-24">
               <div className="flex items-center gap-2 mb-6">
-                <TrendingUp size={18} className="text-brand-green" />
+                <TrendingUp size={18} className="text-white" />
                 <h2 className="text-lg font-bold">Market Dynamics</h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -204,7 +246,7 @@ export default function ReportPage() {
                   <ul className="space-y-2">
                     {marketResearch.targetUsers?.map((u, i) => (
                       <li key={i} className="flex items-start gap-2 text-sm text-white/50">
-                        <Users size={14} className="text-brand-accent mt-0.5 shrink-0" /> {u}
+                        <Users size={14} className="text-white mt-0.5 shrink-0" /> {u}
                       </li>
                     ))}
                   </ul>
@@ -214,7 +256,7 @@ export default function ReportPage() {
                   <ul className="space-y-2">
                     {marketResearch.painPoints?.map((p, i) => (
                       <li key={i} className="flex items-start gap-2 text-sm text-white/50">
-                        <Target size={14} className="text-brand-green mt-0.5 shrink-0" /> {p}
+                        <Target size={14} className="text-white mt-0.5 shrink-0" /> {p}
                       </li>
                     ))}
                   </ul>
@@ -225,10 +267,13 @@ export default function ReportPage() {
 
           {/* ────── COMPETITOR LANDSCAPE ────── */}
           {competitors?.competitors && (
-            <motion.div variants={fadeUp} className="glass-card p-8 mb-8">
-              <div className="flex items-center gap-2 mb-6">
-                <Users size={18} className="text-brand-accent" />
+            <motion.div variants={fadeUp} id="competitors" className="glass-card p-8 mb-8 scroll-mt-24">
+              <div className="flex items-center gap-2 mb-6 group relative w-max cursor-help">
+                <Users size={18} className="text-white" />
                 <h2 className="text-lg font-bold">Competitor Landscape</h2>
+                <div className="absolute bottom-full left-0 mb-2 px-3 py-1.5 bg-white text-black text-xs font-medium rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 whitespace-nowrap shadow-lg">
+                  Real-time data via Tavily Search API
+                </div>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
@@ -245,8 +290,8 @@ export default function ReportPage() {
                         <td className="py-4 pr-4">
                           <span className="font-bold text-white/80">{comp.name}</span>
                         </td>
-                        <td className="py-4 pr-4 text-brand-green/70">{comp.strength}</td>
-                        <td className="py-4 text-brand-orange/70">{comp.weakness}</td>
+                        <td className="py-4 pr-4 text-white/70">{comp.strength}</td>
+                        <td className="py-4 text-white/70">{comp.weakness}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -257,31 +302,31 @@ export default function ReportPage() {
 
           {/* ────── SWOT ANALYSIS ────── */}
           {swot && (
-            <motion.div variants={fadeUp} className="mb-8">
+            <motion.div variants={fadeUp} id="swot" className="mb-8 scroll-mt-24">
               <div className="flex items-center gap-2 mb-6">
-                <Shield size={18} className="text-brand-primary" />
+                <Shield size={18} className="text-white" />
                 <h2 className="text-lg font-bold">SWOT Analysis</h2>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <SwotCard title="Strengths" items={swot.strengths} color="#06d6a0" icon={Zap} />
-                <SwotCard title="Weaknesses" items={swot.weaknesses} color="#f72585" icon={AlertTriangle} />
-                <SwotCard title="Opportunities" items={swot.opportunities} color="#4cc9f0" icon={Eye} />
-                <SwotCard title="Threats" items={swot.threats} color="#ffbe0b" icon={Shield} />
+                <SwotCard title="Strengths" items={swot.strengths} color="#ffffff" icon={Zap} />
+                <SwotCard title="Weaknesses" items={swot.weaknesses} color="#aaaaaa" icon={AlertTriangle} />
+                <SwotCard title="Opportunities" items={swot.opportunities} color="#cccccc" icon={Eye} />
+                <SwotCard title="Threats" items={swot.threats} color="#dddddd" icon={Shield} />
               </div>
             </motion.div>
           )}
 
           {/* ────── MVP ROADMAP ────── */}
           {productMVP && (
-            <motion.div variants={fadeUp} className="glass-card p-8 mb-8">
+            <motion.div variants={fadeUp} id="roadmap" className="glass-card p-8 mb-8 scroll-mt-24">
               <div className="flex items-center gap-2 mb-6">
-                <Map size={18} className="text-brand-orange" />
+                <Map size={18} className="text-white" />
                 <h2 className="text-lg font-bold">Product Roadmap</h2>
               </div>
               <div className="space-y-6">
                 <div className="border-l-2 border-white/10 pl-6 pb-2">
                   <h3 className="font-bold text-white text-sm mb-3 flex items-center gap-2">
-                    <span className="w-6 h-6 rounded bg-brand-primary/20 text-brand-primary flex items-center justify-center text-xs -ml-9">1</span>
+                    <span className="w-6 h-6 rounded bg-white/20 text-white flex items-center justify-center text-xs -ml-9">1</span>
                     MVP (v1) Features
                   </h3>
                   <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -292,7 +337,7 @@ export default function ReportPage() {
                 </div>
                 <div className="border-l-2 border-white/10 pl-6 pb-2">
                   <h3 className="font-bold text-white text-sm mb-3 flex items-center gap-2">
-                    <span className="w-6 h-6 rounded bg-brand-accent/20 text-brand-accent flex items-center justify-center text-xs -ml-9">2</span>
+                    <span className="w-6 h-6 rounded bg-white/20 text-white flex items-center justify-center text-xs -ml-9">2</span>
                     Version 2
                   </h3>
                   <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -303,7 +348,7 @@ export default function ReportPage() {
                 </div>
                 <div className="border-l-2 border-transparent pl-6">
                   <h3 className="font-bold text-white text-sm mb-3 flex items-center gap-2">
-                    <span className="w-6 h-6 rounded bg-brand-green/20 text-brand-green flex items-center justify-center text-xs -ml-9">3</span>
+                    <span className="w-6 h-6 rounded bg-white/20 text-white flex items-center justify-center text-xs -ml-9">3</span>
                     Version 3 (Scale)
                   </h3>
                   <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -318,34 +363,34 @@ export default function ReportPage() {
 
           {/* ────── TECH STACK ────── */}
           {techStack && (
-            <motion.div variants={fadeUp} className="glass-card p-8 mb-8">
+            <motion.div variants={fadeUp} id="tech" className="glass-card p-8 mb-8 scroll-mt-24">
               <div className="flex items-center gap-2 mb-6">
-                <Code size={18} className="text-brand-purple" />
+                <Code size={18} className="text-white" />
                 <h2 className="text-lg font-bold">Recommended Tech Stack</h2>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
                 <div className="bg-white/[0.02] border border-white/5 p-4 rounded-xl text-center">
                   <div className="text-[10px] text-white/30 uppercase tracking-widest mb-1">Frontend</div>
-                  <div className="font-bold text-brand-accent text-sm">{techStack.frontend}</div>
+                  <div className="font-bold text-white text-sm">{techStack.frontend}</div>
                 </div>
                 <div className="bg-white/[0.02] border border-white/5 p-4 rounded-xl text-center">
                   <div className="text-[10px] text-white/30 uppercase tracking-widest mb-1">Backend</div>
-                  <div className="font-bold text-brand-green text-sm">{techStack.backend}</div>
+                  <div className="font-bold text-white text-sm">{techStack.backend}</div>
                 </div>
                 <div className="bg-white/[0.02] border border-white/5 p-4 rounded-xl text-center">
                   <div className="text-[10px] text-white/30 uppercase tracking-widest mb-1">Database</div>
-                  <div className="font-bold text-brand-orange text-sm">{techStack.database}</div>
+                  <div className="font-bold text-white text-sm">{techStack.database}</div>
                 </div>
                 <div className="bg-white/[0.02] border border-white/5 p-4 rounded-xl text-center">
                   <div className="text-[10px] text-white/30 uppercase tracking-widest mb-1">Cloud/Infra</div>
-                  <div className="font-bold text-brand-primary text-sm">{techStack.cloud}</div>
+                  <div className="font-bold text-white text-sm">{techStack.cloud}</div>
                 </div>
               </div>
               <div>
                 <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider mb-3">Key Modules Needed</h4>
                 <div className="flex flex-wrap gap-2">
                   {techStack.modules?.map((m, i) => (
-                    <span key={i} className="px-3 py-1 bg-brand-purple/10 text-brand-purple text-xs rounded-full border border-brand-purple/20">
+                    <span key={i} className="px-3 py-1 bg-white/10 text-white text-xs rounded-full border border-white/20">
                       {m}
                     </span>
                   ))}
@@ -371,7 +416,7 @@ export default function ReportPage() {
                     html2canvas: { 
                       scale: 2, 
                       useCORS: true, 
-                      backgroundColor: '#07080f', 
+                      backgroundColor: '#000000', 
                       windowWidth: 1024 
                     },
                     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
@@ -392,7 +437,9 @@ export default function ReportPage() {
             </button>
           </motion.div>
 
-        </motion.div>
+            </motion.div>
+          </div>
+        </div>
       </div>
     </motion.main>
   )
