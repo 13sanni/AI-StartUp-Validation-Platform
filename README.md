@@ -27,7 +27,12 @@ Validate any startup idea in 60 seconds with a multi-agent AI system that perfor
 - **Docker Ready** — One command to spin up the entire stack (PostgreSQL + Redis + Backend + Frontend)
 
 ## Screenshots
-*(Add screenshots here)*
+![Screenshot 1](./assests/Screenshot%20(127).png)
+![Screenshot 2](./assests/Screenshot%20(128).png)
+![Screenshot 3](./assests/Screenshot%20(129).png)
+![Screenshot 4](./assests/Screenshot%20(130).png)
+![Screenshot 5](./assests/Screenshot%20(131).png)
+![Screenshot 6](./assests/Screenshot%20(132).png)
 
 ## Architecture Diagram
 ```text
